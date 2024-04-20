@@ -1,0 +1,122 @@
+{
+    "Enter":
+    {
+        "ButtonName": "joystick_button_0", 
+        "KeyCode": [ "Return" ]
+    },
+    "Backspace":
+    {
+        "ButtonName": "joystick_button_1",
+        "KeyCode": [ "Backspace" ]
+    },
+    "Shift":
+    {
+        "ButtonName": "joystick_button_3",
+        "KeyCode": [ "LeftShift","RightShift" ]
+    },
+    "Tab":
+    {
+        "ButtonName": "joystick_button_2",
+        "KeyCode": [ "Tab" ]
+    },
+    "W":
+    {
+        "ButtonName": "Axis_7_P",
+        "KeyCode": [ "W" ]
+    },
+    "S":
+    {
+        "ButtonName": "Axis_7_N",
+        "KeyCode": [ "S" ]
+    },
+    "A":
+    {
+        "ButtonName": "Axis_6_N",
+        "KeyCode": [ "A" ]
+    },
+    "D":
+    {
+        "ButtonName": "Axis_6_P",
+        "KeyCode": [ "D" ]
+    },
+    "Q":
+    {
+        "ButtonName": "joystick_button_4",
+        "KeyCode": [ "Q" ]
+    },
+    "E":
+    {
+        "ButtonName": "joystick_button_5",
+        "KeyCode": [ "E" ]
+    },
+    "F":
+    {
+        "ButtonName": "joystick_button_8",
+        "KeyCode": [ "F" ]
+    },
+    "R":
+    {
+        "ButtonName": "joystick_button_9",
+        "KeyCode": [ "R" ]
+    },
+    "V":
+    {
+        "ButtonName": "joystick_button_6",
+        "KeyCode": [ "V" ]
+    },
+    "Escape":
+    {
+        "ButtonName": "joystick_button_7",
+        "KeyCode": [ "Escape" ]
+    },
+    "UpArrow":
+    {
+        "ButtonName": "Axis_5_N",
+        "KeyCode": [ "UpArrow" ]
+    },
+    "DownArrow":
+    {
+        "ButtonName": "Axis_5_P",
+        "KeyCode": [ "DownArrow" ]
+    },
+    "LeftArrow":
+    {
+        "ButtonName": "Axis_4_N",
+        "KeyCode": [ "LeftArrow" ]
+    },
+    "RightArrow":
+    {
+        "ButtonName": "Axis_4_P",
+        "KeyCode": [ "RightArrow" ]
+    },
+    "WheelUp":
+    {
+        "ButtonName": "Axis_9_P",
+        "KeyCode": [ "None" ]
+    },
+    "WheelDown":
+    {
+        "ButtonName": "Axis_10_P",
+        "KeyCode": [ "None" ]
+    },
+    "Ctrl":
+    {
+      "KeyCode": [ "LeftControl", "RightControl" ]
+    },
+    "Ctrl+W":
+    {
+        "ButtonName": "Axis_2_N"
+    },
+    "Ctrl+S":
+    {
+        "ButtonName": "Axis_2_P"
+    },
+    "Ctrl+A":
+    {
+        "ButtonName": "Axis_1_N"
+    },
+    "Ctrl+D":
+    {
+        "ButtonName": "Axis_1_P"
+    }
+}
