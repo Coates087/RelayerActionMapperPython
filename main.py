@@ -1,9 +1,13 @@
+import base64
 import tkinter as tk
+import ntpath
+import json
 from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
 import os
 import constantsPython
 from formControls import pyControl
 from previewFile import previewFileForm
+import resource_files.xbox_buttons as xBtn
 
 
 const = constantsPython.strResourcePath()
@@ -41,6 +45,18 @@ def main():
 
     btnPreview = myControl.createButton(controlMaster=root, controlText="Preview Config File", myCommand=previewFile)
     btnPreview.place(x=461, y=87) # Setting button position 
+
+    
+
+    btnBase64 = myControl.createButton(controlMaster=root, controlText="Convert Base 64", myCommand=openBase64File)
+    btnBase64.place(x=153, y=328) # Setting button position 
+
+    # myImage = tk.PhotoImage(data=xBtn.xbox_dpad_Down, format="png")
+
+    # canvas = tk.Canvas(root, width=300, height=300)
+    # canvas.pack()
+    # canvas.create_image(20, 20, anchor=tk.NW, image=myImage)
+    ## root.configure(background=myImage)
     root.mainloop()
     return (True)
 
@@ -52,11 +68,41 @@ def openConfigFile():
     if not myFile == None:
         myFileName = myFile.name
         textResult = myFile.read()
+        myFile.close()
         global fileContents 
         fileContents = textResult
         print("File Found: " + myFileName)
     else:
         print("No file selected")
+
+
+
+def openBase64File():
+    
+    myFile = askopenfile(mode='r')
+
+    if not myFile == None:
+        myFileName = myFile.name
+        myFile.close()
+
+        onlyFile = ntpath.basename(myFileName)
+        textResult =""
+        with open(myFileName, "rb") as image_file:
+            textResult = base64.b64encode(image_file.read())
+
+        # textResult = myFile.read()
+        decoded = base64.b64decode(textResult)
+        print("printing: " + myFileName)
+        print(decoded)
+        currentDir = os.getcwd()
+        finalPath = currentDir + "/temp/" + onlyFile + ".txt"
+        
+        os.makedirs(os.path.dirname(finalPath), exist_ok=True)
+        f = open(finalPath, "w")
+        myDataStr = repr(decoded)
+        f.write(myDataStr)
+        f.close()
+
 
 def previewFile():
     previewFileForm(root)
