@@ -4,6 +4,7 @@ import ntpath
 import json
 from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
 import os
+from GameControlsClass import GameControls
 import constantsPython
 from formControls import pyControl
 from previewFile import previewFileForm
@@ -25,6 +26,9 @@ root = tk.Tk()
 pixel = tk.PhotoImage(width=1, height=1)
 global fileContents
 fileContents: str = ""
+
+global myGameContrls
+myGameContrls:GameControls = None
 
 
 def close_win():
@@ -75,6 +79,19 @@ def openConfigFile():
         myFile.close()
         global fileContents 
         fileContents = textResult
+        
+        try:
+            # do something
+            obj:GameControls = GameControls.Deserialize(fileContents)
+
+            global myGameContrls
+            myGameContrls = obj
+            print("success")
+            
+        except Exception as e:
+            # handle it
+            print("Error: " + e.args[0])
+
         print("File Found: " + myFileName)
     else:
         print("No file selected")
@@ -85,7 +102,8 @@ def previewFile():
 
 
 def updateControls():
-    LoadpdateControlsForm(root, fileContents)
+    global myGameContrls
+    LoadpdateControlsForm(root, fileContents, myGameContrls)
 
 def openBase64File():
     

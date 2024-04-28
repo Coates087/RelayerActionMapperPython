@@ -9,9 +9,6 @@ class KeyboardClass:
         self.KeyName = KeyName
 
 
-class GenericKeyCodeClass:
-    def __init__(self, KeyCode:list[str]):
-        self.KeyCode = KeyCode
         
 
 class GenericKeyButtonName2:
@@ -19,7 +16,10 @@ class GenericKeyButtonName2:
         self.ButtonName = ButtonName
         self.XBoxButton = XBoxButton
 
-class GenericKey(GenericKeyButtonName2):
+
+
+
+class GenericKey2(GenericKeyButtonName2):
   def __init__(self, ButtonName:str, KeyCode:list[str], XBoxButton:str = ''):
     self.KeyCode = KeyCode
     super().__init__(self, ButtonName, XBoxButton) 
@@ -36,6 +36,22 @@ class GenericKey(GenericKeyButtonName2):
 #         # return CtrlD(_KeyCode, _ButtonName)
 
 @dataclass
+class GenericKeyCode:
+    KeyCode:list[str]
+    def __init__(self, KeyCode:list[str]):
+        self.KeyCode = KeyCode
+
+@dataclass        
+class GenericKey:
+    ButtonName: str
+    XBoxButton:str
+    KeyCode:list[str]
+    def __init__(self, ButtonName:str, KeyCode:list[str], XBoxButton:str = ''):
+        self.KeyCode = KeyCode
+        self.ButtonName = ButtonName
+        self.XBoxButton = XBoxButton
+
+@dataclass
 class GenericKeyButtonName:
     ButtonName: str
     XBoxButton:str
@@ -46,10 +62,68 @@ class GenericKeyButtonName:
 
 @dataclass
 class GameControls:
+    # region Description
     CtrlD:GenericKeyButtonName
+    CtrlA:GenericKeyButtonName
+    CtrlW:GenericKeyButtonName
+    CtrlS:GenericKeyButtonName
+    Enter:GenericKey
+    Backspace:GenericKey
+    Tab:GenericKey
+    W:GenericKey
+    S:GenericKey
+    A:GenericKey
+    D:GenericKey
+    Q:GenericKey
+    E:GenericKey
+    F:GenericKey
+    R:GenericKey
+    V:GenericKey
+    Escape:GenericKey
+    UpArrow:GenericKey
+    DownArrow:GenericKey
+    LeftArrow:GenericKey
+    RightArrow:GenericKey
+    WheelUp:GenericKey
+    WheelDown: GenericKey
+    Ctrl: GenericKeyCode
+    # endregion
 
-    def __init__(self, CtrlD:GenericKeyButtonName) -> None:
+
+    def __init__(self, CtrlD:GenericKeyButtonName=None, CtrlA:GenericKeyButtonName=None, CtrlW:GenericKeyButtonName=None,CtrlS:GenericKeyButtonName=None,
+                 Enter: GenericKey=None,Backspace: GenericKey=None,Shift: GenericKey=None,
+                    Tab: GenericKey=None,W: GenericKey=None,S: GenericKey=None,A: GenericKey=None,D: GenericKey=None,
+                    Q: GenericKey=None,E: GenericKey=None,F: GenericKey=None,R: GenericKey=None,V: GenericKey=None,
+                    Escape: GenericKey=None,UpArrow: GenericKey=None,DownArrow: GenericKey=None,
+                    LeftArrow: GenericKey=None,RightArrow: GenericKey=None,WheelUp: GenericKey=None,
+                    WheelDown: GenericKey=None,Ctrl: GenericKeyCode=None) -> None:
         self.CtrlD = GenericKeyButtonName(**CtrlD)
+        self.CtrlA = GenericKeyButtonName(**CtrlA)
+        self.CtrlW = GenericKeyButtonName(**CtrlW)
+        self.CtrlS = GenericKeyButtonName(**CtrlS)
+
+        self.Enter = GenericKey(**Enter)
+        self.Backspace = GenericKey(**Backspace)
+        self.Shift = GenericKey(**Shift)
+        self.Tab = GenericKey(**Tab)
+        self.W = GenericKey(**W)
+        self.S = GenericKey(**S)
+        self.A = GenericKey(**A)
+        self.D = GenericKey(**D)
+        self.Q = GenericKey(**Q)
+        self.E = GenericKey(**E)
+        self.F = GenericKey(**F)
+        self.R = GenericKey(**R)
+        self.V = GenericKey(**V)
+        
+        self.Escape = GenericKey(**Escape)
+        self.UpArrow = GenericKey(**UpArrow)
+        self.DownArrow = GenericKey(**DownArrow)
+        self.LeftArrow = GenericKey(**LeftArrow)
+        self.RightArrow = GenericKey(**RightArrow)
+        self.WheelUp = GenericKey(**WheelUp)
+        self.WheelDown = GenericKey(**WheelDown)
+        self.Ctrl = GenericKeyCode(**Ctrl)
     # def __init__(self,CtrlD:CtrlD):
     #     self.CtrlD = CtrlD
         
@@ -57,342 +131,51 @@ class GameControls:
         
         strNew = jsonString.replace("Ctrl+","Ctrl")
         obj1 = json.loads(strNew)
-        obj = GameControls(**obj1)
+        obj:GameControls = GameControls(**obj1)
         return obj
-
-
-@dataclass
-class A(GenericKey):
-    # KeyCode: list[str]
-    # ButtonName: str
-    def __init__(self, ButtonName:str, KeyCode:list[str], XBoxButton:str = ''):
-        super().__init__(self, ButtonName=ButtonName, KeyCode=KeyCode, XBoxButton=XBoxButton) 
-    # @staticmethod
-    # def from_dict(obj: Any) -> 'A':
-    #     _KeyCode = [tk.from_dict(y) for y in obj.get("KeyCode")]
-    #     _ButtonName = str(obj.get("ButtonName"))
-    #     return A(_KeyCode, _ButtonName)
     
-# @dataclass
-# class A2:
-#     KeyCode: list[str]
-#     ButtonName: str
+    def Serialize(self):
+        #[a for a in dir(self) if not a.startswith('__') and not callable(getattr(obj, a))]
+        #obj = vars(self)
+        obj2 = vars_recursive(self)
+        jsonString = json.dumps(obj2)
+        strNew = jsonString.replace("CtrlD","Ctrl+D")
+        strNew = strNew.replace("CtrlW","Ctrl+W")
+        strNew = strNew.replace("CtrlS","Ctrl+S")
+        strNew = strNew.replace("CtrlA","Ctrl+A")
 
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'A':
-#         _KeyCode = [tk.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return A(_KeyCode, _ButtonName)
+        obj = json.loads(strNew)
+        
+        obj3 = delete_prop_recursive(obj,"XBoxButton")
+        
+        strFinal = json.dumps(obj3)
+        
+        
+        return strFinal
+def delete_prop_recursive(obj, keyToRemove = ''):
+    for item in obj:
+        if item == keyToRemove and keyToRemove != '':
+            del obj[keyToRemove] ## We don't want this property to be included in the json string
+        if obj[item] != None:
+            temp = obj[item]
+            try:
+                if not (isinstance(temp, str) and isinstance(temp, int) and isinstance(temp, float)):
+                    delete_prop_recursive(obj[item], keyToRemove)
+            except Exception as e:
+                print(obj[item])
+                pass
+    return obj
 
-# @dataclass
-# class Backspace:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'Backspace':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return Backspace(_KeyCode, _ButtonName)
-
-# @dataclass
-# class Ctrl:
-#     KeyCode: list[str]
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'Ctrl':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         return Ctrl(_KeyCode)
-
-# @dataclass
-# class CtrlA:
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'CtrlA':
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return CtrlA(_ButtonName)
-
-# @dataclass
-# class CtrlD:
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'CtrlD':
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return CtrlD(_ButtonName)
-
-# @dataclass
-# class CtrlS:
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'CtrlS':
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return CtrlS(_ButtonName)
-
-# @dataclass
-# class CtrlW:
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'CtrlW':
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return CtrlW(_ButtonName)
-
-# @dataclass
-# class D:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'D':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return D(_KeyCode, _ButtonName)
-
-# @dataclass
-# class DownArrow:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'DownArrow':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return DownArrow(_KeyCode, _ButtonName)
-
-# @dataclass
-# class E:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'E':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return E(_KeyCode, _ButtonName)
-
-# @dataclass
-# class Enter:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'Enter':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return Enter(_KeyCode, _ButtonName)
-
-# @dataclass
-# class Escape:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'Escape':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return Escape(_KeyCode, _ButtonName)
-
-# @dataclass
-# class F:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'F':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return F(_KeyCode, _ButtonName)
-
-# @dataclass
-# class LeftArrow:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'LeftArrow':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return LeftArrow(_KeyCode, _ButtonName)
-
-# @dataclass
-# class Q:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'Q':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return Q(_KeyCode, _ButtonName)
-
-# @dataclass
-# class R:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'R':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return R(_KeyCode, _ButtonName)
-
-# @dataclass
-# class RightArrow:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'RightArrow':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return RightArrow(_KeyCode, _ButtonName)
-
-# @dataclass
-# class S:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'S':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return S(_KeyCode, _ButtonName)
-
-# @dataclass
-# class Shift:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'Shift':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return Shift(_KeyCode, _ButtonName)
-
-# @dataclass
-# class Tab:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'Tab':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return Tab(_KeyCode, _ButtonName)
-
-# @dataclass
-# class UpArrow:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'UpArrow':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return UpArrow(_KeyCode, _ButtonName)
-
-# @dataclass
-# class V:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'V':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return V(_KeyCode, _ButtonName)
-
-# @dataclass
-# class W:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'W':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return W(_KeyCode, _ButtonName)
-
-# @dataclass
-# class WheelDown:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'WheelDown':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return WheelDown(_KeyCode, _ButtonName)
-
-# @dataclass
-# class WheelUp:
-#     KeyCode: list[str]
-#     ButtonName: str
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'WheelUp':
-#         _KeyCode = [.from_dict(y) for y in obj.get("KeyCode")]
-#         _ButtonName = str(obj.get("ButtonName"))
-#         return WheelUp(_KeyCode, _ButtonName)
-    
-# @dataclass
-# class Root:
-#     Enter: Enter
-#     Backspace: Backspace
-#     Shift: Shift
-#     Tab: Tab
-#     W: W
-#     S: S
-#     A: A
-#     D: D
-#     Q: Q
-#     E: E
-#     F: F
-#     R: R
-#     V: V
-#     Escape: Escape
-#     UpArrow: UpArrow
-#     DownArrow: DownArrow
-#     LeftArrow: LeftArrow
-#     RightArrow: RightArrow
-#     WheelUp: WheelUp
-#     WheelDown: WheelDown
-#     Ctrl: Ctrl
-#     CtrlW: CtrlW
-#     CtrlS: CtrlS
-#     CtrlA: CtrlA
-#     CtrlD: CtrlD
-
-#     @staticmethod
-#     def from_dict(obj: Any) -> 'Root':
-#         _Enter = Enter.from_dict(obj.get("Enter"))
-#         _Backspace = Backspace.from_dict(obj.get("Backspace"))
-#         _Shift = Shift.from_dict(obj.get("Shift"))
-#         _Tab = Tab.from_dict(obj.get("Tab"))
-#         _W = W.from_dict(obj.get("W"))
-#         _S = S.from_dict(obj.get("S"))
-#         _A = A.from_dict(obj.get("A"))
-#         _D = D.from_dict(obj.get("D"))
-#         _Q = Q.from_dict(obj.get("Q"))
-#         _E = E.from_dict(obj.get("E"))
-#         _F = F.from_dict(obj.get("F"))
-#         _R = R.from_dict(obj.get("R"))
-#         _V = V.from_dict(obj.get("V"))
-#         _Escape = Escape.from_dict(obj.get("Escape"))
-#         _UpArrow = UpArrow.from_dict(obj.get("UpArrow"))
-#         _DownArrow = DownArrow.from_dict(obj.get("DownArrow"))
-#         _LeftArrow = LeftArrow.from_dict(obj.get("LeftArrow"))
-#         _RightArrow = RightArrow.from_dict(obj.get("RightArrow"))
-#         _WheelUp = WheelUp.from_dict(obj.get("WheelUp"))
-#         _WheelDown = WheelDown.from_dict(obj.get("WheelDown"))
-#         _Ctrl = Ctrl.from_dict(obj.get("Ctrl"))
-#         _CtrlW = CtrlW.from_dict(obj.get("Ctrl+W"))
-#         _CtrlS = CtrlS.from_dict(obj.get("Ctrl+S"))
-#         _CtrlA = CtrlA.from_dict(obj.get("Ctrl+A"))
-#         _CtrlD = CtrlD.from_dict(obj.get("Ctrl+D"))
-#         return Root(_Enter, _Backspace, _Shift, _Tab, _W, _S, _A, _D, _Q, _E, _F, _R, _V, _Escape, _UpArrow, _DownArrow, _LeftArrow, _RightArrow, _WheelUp, _WheelDown, _Ctrl, _Ctrl+W, _Ctrl+S, _Ctrl+A, _Ctrl+D)
-
-
+def vars_recursive(obj, key:str =''):
+    objFinal = vars(obj)
+    for key, value in objFinal.items():
+        if not value == None:
+            try:
+                vars(value)
+                objFinal[key] = vars_recursive(value)
+            except Exception as e:
+                print(value)
+                pass
+            
+        
+    return objFinal
