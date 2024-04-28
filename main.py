@@ -7,6 +7,7 @@ import os
 import constantsPython
 from formControls import pyControl
 from previewFile import previewFileForm
+from updateControls import LoadpdateControlsForm
 import resource_files.xbox_buttons as xBtn
 
 
@@ -23,7 +24,7 @@ root = tk.Tk()
 
 pixel = tk.PhotoImage(width=1, height=1)
 global fileContents
-fileContents: str
+fileContents: str = ""
 
 
 def close_win():
@@ -38,7 +39,7 @@ def main():
     #pixel.blank
     #btnLoadFile = tk.Button(root, image=pixel,text="Load File",width=133,height=33, font=('Segoe 9'), compound="left", command=openConfigFile)
     btnLoadFile = myControl.createButton(controlMaster=root, controlText="Load File", myCommand=openConfigFile)
-    btnLoadFile.place(x=153, y=87) # Setting button position
+    btnLoadFile.place(x=103, y=87) # Setting button position
 
     btnExit = myControl.createButton(controlMaster=root, controlText="Exit", myCommand=close_win)
     btnExit.place(x=461, y=329) # Setting button position
@@ -47,6 +48,9 @@ def main():
     btnPreview.place(x=461, y=87) # Setting button position 
 
     
+
+    btnUpdateCtrls = myControl.createButton(controlMaster=root, controlText="Edit Controls", myCommand=updateControls)
+    btnUpdateCtrls.place(x=281, y=87) # Setting button position 
 
     btnBase64 = myControl.createButton(controlMaster=root, controlText="Convert Base 64", myCommand=openBase64File)
     btnBase64.place(x=153, y=328) # Setting button position 
@@ -76,6 +80,12 @@ def openConfigFile():
         print("No file selected")
 
 
+def previewFile():
+    previewFileForm(root, fileContents)
+
+
+def updateControls():
+    LoadpdateControlsForm(root, fileContents)
 
 def openBase64File():
     
@@ -104,7 +114,5 @@ def openBase64File():
         f.close()
 
 
-def previewFile():
-    previewFileForm(root)
 
 main()

@@ -9,7 +9,7 @@ const = constantsPython.strResourcePath()
 myControl = pyControl
 
 
-def previewFileForm(controlMaster: tk.Misc):
+def previewFileForm(controlMaster: tk.Misc, jsonData:str):
     #global myPreview
     myPreview = tk.Toplevel()
 
@@ -19,7 +19,7 @@ def previewFileForm(controlMaster: tk.Misc):
     #Consolas, 15.75pt
     pixel2 = tk.PhotoImage(width=1, height=1)
     
-    testStr = "Relayer \nAdvanced"
+    testStr = jsonData ##"Relayer \nAdvanced"
     btPreview = myControl.createMultilineTextbox(controlMaster=myPreview, myWidth=40,myHeight=20, controlText=testStr, controlFont="Consolas 15",readOnly=True)
     btPreview.place(x=5, y=49) # Setting position
 

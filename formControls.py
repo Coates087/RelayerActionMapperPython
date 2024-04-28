@@ -14,7 +14,9 @@ class pyControl:
         textboxState = 'normal'
         if readOnly == True:
             textboxState = 'disabled'
-        myTexbox = tk.Text(controlMaster,text=controlText,width=myWidth,height=myHeight, font=(controlFont), state=textboxState)
+        myTexbox = tk.Text(controlMaster)
+        myTexbox.insert(tk.INSERT, controlText)
+        myTexbox.configure(width=myWidth,height=myHeight, font=(controlFont), state=textboxState)
         #myTexbox.master = controlMaster
         return myTexbox
     
