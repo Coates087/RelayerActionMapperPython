@@ -9,6 +9,7 @@ import constantsPython
 from formControls import pyControl
 from previewFile import previewFileForm
 import resource_files.xbox_buttons as xBtn
+from GameControlsClass import GameControls #,GameControls2
 
 
 const = constantsPython.strResourcePath()
@@ -37,6 +38,14 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str):
     updateControlForm.grab_set() # forces focus on form
    
 
+def LoadJson():
+    strJson:str = '{"Ctrl+D":{"ButtonName":"Axis_1_P"}}' #"\"Ctrl+D\": {\"ButtonName\": \"Axis_1_P\"}"
+    strJson = '{"CtrlD":{"ButtonName":"Axis_1_P"}}'
+    obj = GameControls.Deserialize(strJson) #= #json.loads(strJson)
+    #obj = GameControls(**json.loads(strJson))
+
+    print(obj.CtrlD.ButtonName)
+
 
 
 
@@ -58,7 +67,7 @@ def LoadImages(myGlobalForm:tk.Misc):
 
 
     
-    btnKeys1:tk.Button = myControl.createButton(controlMaster=myGlobalForm, myWidth=10,myHeight=1, controlText="Edit Keys")
+    btnKeys1:tk.Button = myControl.createButton(controlMaster=myGlobalForm, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=LoadJson)
 
     btnKeys1.pack(in_=mySubFrame,side=tk.TOP)
     mySubFrame.pack(in_= myFrame, side='left')
