@@ -27,6 +27,13 @@ jsonFileData:str = ''
 global myGameContrls
 myGameContrls:GameControls 
 
+global allDropdowns
+allDropdowns: list[tk.OptionMenu]
+## https://stackoverflow.com/a/45442534
+
+global allButtons
+allButtons: list[tk.Button] = []
+
 def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrls:GameControls):
     #global myPreview
 
@@ -60,8 +67,13 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
 def LoadJson():
     strJson:str = '{"Ctrl+D":{"ButtonName":"Axis_1_P"}}' #"\"Ctrl+D\": {\"ButtonName\": \"Axis_1_P\"}"
     strJson = '{"CtrlD":{"ButtonName":"Axis_1_P"}}'
-
+    
     try:
+        global allButtons
+
+        temp1 =allButtons
+
+        print(temp1)
         # do something
         obj:GameControls = GameControls.Deserialize(jsonFileData)
         print(obj.CtrlD.ButtonName)
@@ -95,6 +107,10 @@ def LoadImages(myGlobalForm:tk.Misc):
 
     
     btnKeys1:tk.Button = myControl.createButton(controlMaster=myGlobalForm, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=LoadJson)
+
+
+    global allButtons
+    allButtons.append(btnKeys1)
 
     btnKeys1.pack(in_=mySubFrame,side=tk.TOP)
     mySubFrame.pack(in_= myFrame, side='left')

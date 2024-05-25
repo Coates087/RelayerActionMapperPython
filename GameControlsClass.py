@@ -144,6 +144,9 @@ class GameControls:
         strNew = strNew.replace("CtrlS","Ctrl+S")
         strNew = strNew.replace("CtrlA","Ctrl+A")
 
+        print('serialize')
+        print(strNew)
+
         obj = json.loads(strNew)
         
         obj3 = delete_prop_recursive(obj,"XBoxButton")
@@ -153,23 +156,26 @@ class GameControls:
         
         return strFinal
 def delete_prop_recursive(obj, keyToRemove = ''):
-    for item in obj:
-        if item == keyToRemove and keyToRemove != '':
-            del obj[keyToRemove] ## We don't want this property to be included in the json string
-        if obj[item] != None:
-            temp = obj[item]
-            try:
-                if not (isinstance(temp, str) and isinstance(temp, int) and isinstance(temp, float)):
-                    delete_prop_recursive(obj[item], keyToRemove)
-            except Exception as e:
-                print(obj[item])
-                pass
+    if (not isinstance(obj, str) and not isinstance(obj, int) and not isinstance(obj, float) and not isinstance(obj, list)):
+
+        for item in obj:
+            if item == keyToRemove and keyToRemove != '':
+                del obj[keyToRemove] ## We don't want this property to be included in the json string
+                return obj
+            elif obj[item] != None:
+                temp = obj[item]
+                try:
+                    if not (isinstance(temp, str) and not isinstance(temp, int) and not isinstance(temp, float) and not isinstance(temp, list)):
+                        delete_prop_recursive(obj[item], keyToRemove)
+                except Exception as e:
+                    print(obj[item])
+                    pass
     return obj
 
 def vars_recursive(obj, key:str =''):
     objFinal = vars(obj)
     for key, value in objFinal.items():
-        if not value == None:
+        if (not value == None and not isinstance(value, str) and not isinstance(value, float)) and not isinstance(value, list): #and not isinstance(value, str) and not isinstance(value, float)
             try:
                 vars(value)
                 objFinal[key] = vars_recursive(value)
