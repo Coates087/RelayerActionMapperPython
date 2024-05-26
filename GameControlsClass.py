@@ -3,6 +3,14 @@ from typing import Any
 from dataclasses import dataclass
 from copy import copy, deepcopy
 
+@dataclass
+class GamePadButton:
+    GamePadButtonName: str
+    GamePadButtonValue:str
+    def __init__(self, GamePadButtonName:str, GamePadButtonValue:str):
+        self.GamePadButtonName = GamePadButtonName
+        self.GamePadButtonValue = GamePadButtonValue
+
 class KeyboardClass:
     def __init__(self, KeyCode:str, KeyName:str):
         self.KeyCode = KeyCode

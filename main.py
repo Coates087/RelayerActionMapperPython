@@ -68,6 +68,25 @@ def main():
     root.mainloop()
     return (True)
 
+def openSpecialFile():
+    myFile = open(const.xbox_pad_json, "r")        
+    myFileName = myFile.name
+    textResult = myFile.read()
+    myFile.close()
+    global fileContents 
+    fileContents = textResult
+    
+    try:
+        # do something
+        obj:GameControls = GameControls.Deserialize(fileContents)
+
+        global myGameContrls
+        myGameContrls = obj
+        print("success")
+        
+    except Exception as e:
+        # handle it
+        print("Error: " + e.args[0])
 
 def openConfigFile():
     #
@@ -103,6 +122,9 @@ def previewFile():
 
 def updateControls():
     global myGameContrls
+    if fileContents == '':
+        openSpecialFile()
+        
     LoadpdateControlsForm(root, fileContents, myGameContrls)
 
 def openBase64File():
