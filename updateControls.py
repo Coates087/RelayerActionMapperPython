@@ -8,7 +8,7 @@ import os
 import constantsPython
 from formControls import pyControl
 from previewFile import previewFileForm
-import resource_files.xbox_buttons as xBtn
+from resource_files.xbox_buttons import xBtn
 from GameControlsClass import GameControls #,GameControls2
 
 
@@ -60,8 +60,9 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
         print(e.args[0])
         print("Add Dummy JSON")
 
+    if not updateControlForm == None:
+        updateControlForm.grab_set() # forces focus on form
     LoadImages(updateControlForm)
-    updateControlForm.grab_set() # forces focus on form
    
 
 def LoadJson():
@@ -94,29 +95,83 @@ def LoadImages(myGlobalForm:tk.Misc):
     myFrame = tk.Frame(myGlobalForm,width=200,height=200)
     myFrame.place(y=10, x=10)
 
-    mySubFrame = tk.Frame(myGlobalForm,width=100,height=100)
-
-    myImage = tk.PhotoImage(data=xBtn.xbox_dpad_Down,format="png")
-    canvas = tk.Canvas(myGlobalForm, width=100, height=100)
-    canvas.create_image(10, 10, anchor=tk.NW, image=myImage)
-    # canvas.place(y=10, x=10) 
-    canvas.pack(in_= myFrame, side='left')
-    myLable1:tk.Text = myControl.createTextbox(controlMaster=myGlobalForm, controlText ="Sample", myWidth=35,myHeight=1,readOnly=True)
-    myLable1.pack(in_=mySubFrame,side=tk.BOTTOM)
-
-
+    #bytesXbox = xBtn
+    myButtons = vars(xBtn)
+    myXboxButtons = getXboxButtons()
     
-    btnKeys1:tk.Button = myControl.createButton(controlMaster=myGlobalForm, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=LoadJson)
+    aLength = myXboxButtons.__len__()
+    for r in range(aLength - 1):
+        anXboxButton:str = myXboxButtons[r]
+
+        mySubFrame = tk.Frame(myFrame,width=100,height=100)
+
+        myData:bytes =myButtons[anXboxButton]
+        myImage2 = tk.PhotoImage(data=myData,format="png")
+        lbl = tk.Label(mySubFrame, image=myImage2)
+        
+        lbl.pack(in_= mySubFrame, side='left')
+        lbl.image = myImage2 # save the image reference
+        strSample = "Sample "+ str(r) + "-" + str(0)
+        myLable1:tk.Text = myControl.createTextbox(controlMaster=myFrame, controlText =strSample , myWidth=35,myHeight=1,readOnly=True)
+        myLable1.pack(in_=mySubFrame,side=tk.BOTTOM)
 
 
-    global allButtons
-    allButtons.append(btnKeys1)
+        
+        btnKeys1:tk.Button = myControl.createButton(controlMaster=myFrame, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=LoadJson)
 
-    btnKeys1.pack(in_=mySubFrame,side=tk.TOP)
-    mySubFrame.pack(in_= myFrame, side='left')
+
+        global allButtons
+        allButtons.append(btnKeys1)
+
+        btnKeys1.pack(in_=mySubFrame, side=tk.BOTTOM)
+        mySubFrame.grid(row=r,column=0)
 
     myGlobalForm.mainloop()
     return (True)
 
 
+def getXboxButtons():
+    xboxList: list[str] = []
 
+    # other
+    xboxList.append("xbox_start")
+    xboxList.append("xbox_back")
+
+    # face buttons
+    xboxList.append("xbox_A")
+    xboxList.append("xbox_B")
+    xboxList.append("xbox_X")
+    xboxList.append("xbox_Y")
+    
+    # shoulder buttons
+    xboxList.append("xbox_LB")
+    xboxList.append("xbox_RB")
+    xboxList.append("xbox_LT")
+    xboxList.append("xbox_RT")
+
+    # dpad
+    xboxList.append("xbox_dpad_Up")
+    xboxList.append("xbox_dpad_Down")
+    xboxList.append("xbox_dpad_Left")
+    xboxList.append("xbox_dpad_Right")
+    return xboxList
+
+def getXboxSticks():
+    xboxList: list[str] = []
+
+    # left analog stick
+    xboxList.append("xbox_left_stick")
+    xboxList.append("xbox_left_stick_Up")
+    xboxList.append("xbox_left_stick_Down")
+    xboxList.append("xbox_left_stick_Left")
+    xboxList.append("xbox_left_stick_Right")
+    xboxList.append("xbox_left_stick_click")
+
+    # right analog stick
+    xboxList.append("xbox_right_stick_Up")
+    xboxList.append("xbox_right_stick_Down")
+    xboxList.append("xbox_right_stick_Left")
+    xboxList.append("xbox_right_stick_Right")
+    xboxList.append("xbox_right_stick_click")
+
+    return xboxList

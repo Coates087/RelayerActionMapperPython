@@ -1,7 +1,7 @@
 import json
 from typing import Any
 from dataclasses import dataclass
-
+from copy import copy, deepcopy
 
 class KeyboardClass:
     def __init__(self, KeyCode:str, KeyName:str):
@@ -137,7 +137,10 @@ class GameControls:
     def Serialize(self):
         #[a for a in dir(self) if not a.startswith('__') and not callable(getattr(obj, a))]
         #obj = vars(self)
-        obj2 = vars_recursive(self)
+        obj1 = deepcopy(self) ##GameControls(**self)
+        obj2 = vars_recursive(obj1)
+
+        #self = GameControls(**obj2)
         jsonString = json.dumps(obj2)
         strNew = jsonString.replace("CtrlD","Ctrl+D")
         strNew = strNew.replace("CtrlW","Ctrl+W")
@@ -151,10 +154,10 @@ class GameControls:
         
         obj3 = delete_prop_recursive(obj,"XBoxButton")
         
+        self = GameControls(**obj2)
         strFinal = json.dumps(obj3)
-        
-        
         return strFinal
+    
 def delete_prop_recursive(obj, keyToRemove = ''):
     if (not isinstance(obj, str) and not isinstance(obj, int) and not isinstance(obj, float) and not isinstance(obj, list)):
 
@@ -172,13 +175,13 @@ def delete_prop_recursive(obj, keyToRemove = ''):
                     pass
     return obj
 
-def vars_recursive(obj, key:str =''):
+def vars_recursive(obj, key1:str =''):
     objFinal = vars(obj)
     for key, value in objFinal.items():
         if (not value == None and not isinstance(value, str) and not isinstance(value, float)) and not isinstance(value, list): #and not isinstance(value, str) and not isinstance(value, float)
             try:
                 vars(value)
-                objFinal[key] = vars_recursive(value)
+                objFinal[key] = vars_recursive(value, key)
             except Exception as e:
                 print(value)
                 pass
