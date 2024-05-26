@@ -58,13 +58,7 @@ class BetterCombobox(ttk.Combobox):
                     newDict[a1] = definition[dislplayMember]
                    
                     pass
-                #d = dictionaryResult.get(valueMember)
-                self.dict = newDict #.get(valueMember)
-                # for r in range(optionsVals.__len__()):
-                #     anOption = optionsVals[r]
-                #     results = vars_recursive(anOption)
-                #     self.dict = optionsVals[valueMember]
-
+                self.dict = newDict 
         
         optionVals2:list[str] = [] #self.dict.values().mapping #.values()
         
@@ -73,7 +67,6 @@ class BetterCombobox(ttk.Combobox):
             
         # combobox constructor with list of keys
         ttk.Combobox.__init__(self,master=master, values=optionVals2)
-        #ttk.Combobox.__init__(self,master=master, **optionVals2)
 
         # assign some function
         self.bind('<<ComboboxSelected>>', self.on_select)

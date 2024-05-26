@@ -12,6 +12,7 @@ from previewFile import previewFileForm
 from resource_files.xbox_buttons import xBtn
 from GameControlsClass import GameControls, GamePadButton
 from tkinter.tix import ScrolledWindow
+from copy import copy, deepcopy
 
 
 const = constantsPython.strResourcePath()
@@ -36,8 +37,8 @@ allDropdowns: list[BetterCombobox] = []
 global allButtons
 allButtons: list[tk.Button] = []
 
-global var1
-var1:tk.StringVar = None
+global rdoInputType
+rdoInputType:tk.StringVar = None
 
 def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrls:GameControls):
     #global myPreview
@@ -71,14 +72,17 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
     #LoadForm()
    
 
-def LoadJson():
+def LoadKeyDialog(eventIndex:str='0', buttonName:str=''):
     strJson:str = '{"Ctrl+D":{"ButtonName":"Axis_1_P"}}' #"\"Ctrl+D\": {\"ButtonName\": \"Axis_1_P\"}"
     strJson = '{"CtrlD":{"ButtonName":"Axis_1_P"}}'
-    print(var1.get())
+    widgetIndex = buttonName
+    #print(rdoInputType.get())
     try:
         global allButtons
 
-        temp1 =allButtons
+        temp1 =allButtons[eventIndex]
+
+        valID = temp1.winfo_id()
 
         global allDropdowns
         temp2 = allDropdowns[0]
@@ -169,12 +173,12 @@ def LoadImages(myGlobalForm:tk.Misc):
     #frame_main.pack(fill=tk.BOTH, side=tk.LEFT, expand=0)
 
     ##frame_top.pack(fill=tk.BOTH, side=tk.LEFT, expand=0, anchor=tk.NW)
-    global var1
-    var1 = tk.StringVar()
-    var1.set(0)
+    global rdoInputType
+    rdoInputType = tk.StringVar()
+    rdoInputType.set(0)
 
-    rdoKey = tk.Radiobutton(radio_frame, text="Edit for Keyboard and Gamepad", variable=var1, value=0)
-    rdoPad = tk.Radiobutton(radio_frame, text="Edit for Controller Only", variable=var1, value=1)
+    rdoKey = tk.Radiobutton(radio_frame, text="Edit for Keyboard and Gamepad", variable=rdoInputType, value=0)
+    rdoPad = tk.Radiobutton(radio_frame, text="Edit for Controller Only", variable=rdoInputType, value=1)
     radio_frame.grid(row=1, column=0)
     frame_top.place(x=1,y=1)
     myCanvas  = tk.Canvas(frame_main,bg="yellow", width=400, height=400)
@@ -219,8 +223,15 @@ def LoadImages(myGlobalForm:tk.Misc):
         myLable1:tk.Text = myControl.createTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
         myLable1.configure(bg="#E5E5E5")
         myLable1.grid(column=1,row=1, rowspan=1)
-        btnKeys1:tk.Button = myControl.createButton(controlMaster=specialFrame, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=LoadJson)
-
+        
+        aButtonId = deepcopy(anXboxButton)
+        aButtonNo = deepcopy(r)
+        #button_var = tk.StringVar(value=aButtonId)
+        btnKeys1:tk.Button = myControl.createButton(controlMaster=specialFrame, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=lambda buttonIndex=aButtonNo, buttonName=aButtonId: LoadKeyDialog(buttonIndex, buttonName))
+        # btnKeys1:tk.Button =tk.Button(specialFrame, width=10,height=1, text="Edit Keys", font=("Segoe 10"), compound="right", background="lightblue", 
+        #                       activebackground='#0398fc', command=lambda:LoadJson(aButtonNo))
+       
+       
         global allButtons
         allButtons.append(btnKeys1)
 
@@ -234,10 +245,6 @@ def LoadImages(myGlobalForm:tk.Misc):
         
         global allDropdowns
         allDropdowns.append(aDropDown)
-        #aDropDown = ttk.Combobox(specialFrame, width=20, values= myButtonOptions)
-        # aDropDown.bind('<<ComboboxSelected>>',
-        #                   lambda event,
-        #                   cmb=aDropDown: self.get_results_from_combobox(event, cmb))
 
         aDropDown.grid(column=1,row=0, sticky="SW")
         mySubFrame.grid(row=r,column=0)
