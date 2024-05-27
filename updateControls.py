@@ -15,6 +15,7 @@ from tkinter.tix import ScrolledWindow
 from copy import copy, deepcopy
 
 
+
 const = constantsPython.strResourcePath()
 myControl = pyControl
 
@@ -29,6 +30,9 @@ jsonFileData:str = ''
 
 global myGameContrls
 myGameContrls:GameControls 
+
+global localGameContrls
+localGameContrls:GameControls = None
 
 global allDropdowns
 allDropdowns: list[BetterCombobox] = []
@@ -181,7 +185,7 @@ def LoadImages(myGlobalForm:tk.Misc):
     rdoPad = tk.Radiobutton(radio_frame, text="Edit for Controller Only", variable=rdoInputType, value=1)
     radio_frame.grid(row=1, column=0)
     frame_top.place(x=1,y=1)
-    myCanvas  = tk.Canvas(frame_main,bg="yellow", width=400, height=400)
+    myCanvas  = tk.Canvas(frame_main,bg="yellow", width=700, height=400)
     myCanvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     second_frame = tk.Frame(myCanvas, width = 1000, height = 600, bg="green")
@@ -195,8 +199,14 @@ def LoadImages(myGlobalForm:tk.Misc):
     rdoKey.grid(row=1, column=1, sticky=tk.NW)
     rdoPad.grid(row=1, column=2, sticky=tk.NW)
     myButtons = vars(xBtn)
+
+    myKeys = myButtons.keys()
+    print(myKeys)
     myXboxButtons = getXboxButtons()
     aLength = myXboxButtons.__len__()
+
+    myXboxSticks = getXboxSticks()
+    aLength2 = myXboxSticks.__len__()
     
     myButtonOptions = getXboxOptions()
 
@@ -205,13 +215,18 @@ def LoadImages(myGlobalForm:tk.Misc):
     for index, definition in enumerate(myButtonOptions):
         myButtonNames.append(definition.GamePadButtonName)
         myButtonValues.append(definition.GamePadButtonValue)
-        #pass
+
+    global allDropdowns
+    global allButtons
+
+    # Xbox Buttons
     for r in range(aLength):
         anXboxButton:str = myXboxButtons[r]
 
         mySubFrame = tk.Frame(second_frame, width=400)
 
         myData:bytes =myButtons[anXboxButton]
+        
         myImage2 = tk.PhotoImage(data=myData,format="png",width=70,height=70)
         lbl = tk.Label(mySubFrame, image=myImage2, bg="#B1B1B1")
 
@@ -224,15 +239,9 @@ def LoadImages(myGlobalForm:tk.Misc):
         myLable1.configure(bg="#E5E5E5")
         myLable1.grid(column=1,row=1, rowspan=1)
         
-        aButtonId = deepcopy(anXboxButton)
-        aButtonNo = deepcopy(r)
         #button_var = tk.StringVar(value=aButtonId)
-        btnKeys1:tk.Button = myControl.createButton(controlMaster=specialFrame, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=lambda buttonIndex=aButtonNo, buttonName=aButtonId: LoadKeyDialog(buttonIndex, buttonName))
-        # btnKeys1:tk.Button =tk.Button(specialFrame, width=10,height=1, text="Edit Keys", font=("Segoe 10"), compound="right", background="lightblue", 
-        #                       activebackground='#0398fc', command=lambda:LoadJson(aButtonNo))
+        btnKeys1:tk.Button = myControl.createButton(controlMaster=specialFrame, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=lambda buttonIndex=r, buttonName=anXboxButton: LoadKeyDialog(buttonIndex, buttonName))
        
-       
-        global allButtons
         allButtons.append(btnKeys1)
 
         specialFrame.grid(column=1,row=0, sticky="SW")
@@ -243,13 +252,52 @@ def LoadImages(myGlobalForm:tk.Misc):
         aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
         
         
-        global allDropdowns
         allDropdowns.append(aDropDown)
 
         aDropDown.grid(column=1,row=0, sticky="SW")
         mySubFrame.grid(row=r,column=0)
 
+    # Xbox Sticks
+    for r in range(aLength2):
+        anXboxButton:str = myXboxSticks[r]
+
+        mySubFrame = tk.Frame(second_frame, width=400)
+
+        myData:bytes =myButtons[anXboxButton]
+        myImage2 = tk.PhotoImage(data=myData,format="png",width=107,height=70)
+        myImage2  = myImage2.zoom(x=7)
+
+        img  = myImage2.subsample(x=10)
+        img.configure(width=70,height=70)
+        lbl = tk.Label(mySubFrame, image=img, bg="#FFFFFF")
+
+        ## Grid Style
+        specialFrame = tk.Frame(mySubFrame)
+        lbl.grid(column=0,row=0, rowspan=2)
+        lbl.image = img # save the image reference
+        strSample = "Sample "+ str(r) + "-" + str(0)
+        myLable1:tk.Text = myControl.createTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
+        myLable1.configure(bg="#E5E5E5")
+        myLable1.grid(column=1,row=1, rowspan=1)
+        
+        buttonIndexFinal = (r + aLength)
+        btnKeys1:tk.Button = myControl.createButton(controlMaster=specialFrame, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=lambda buttonIndex=buttonIndexFinal, buttonName=anXboxButton: LoadKeyDialog(buttonIndex, buttonName))
+       
+        allButtons.append(btnKeys1)
+
+        specialFrame.grid(column=1,row=0, sticky="SW")
+        btnKeys1.grid(column=0,row=0, sticky="SW")
+
+        optionVar = tk.StringVar(name='GamePadButtonName', value='GamePadButtonValue')
+        optionVar.set(myButtonOptions[0].GamePadButtonValue)
+        aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
+        
+        allDropdowns.append(aDropDown)
+
+        aDropDown.grid(column=1,row=0, sticky="SW")
+        mySubFrame.grid(row=r,column=1)
     
+
     myCanvas.grid(row=0, column=0, sticky="news")
     
     y_scrollbar = tk.Scrollbar(frame_main, orient=tk.VERTICAL, command=myCanvas.yview)
@@ -266,6 +314,7 @@ def LoadImages(myGlobalForm:tk.Misc):
     
     myGlobalForm.mainloop()
     return (True)
+
 
 def getXboxOptions():
     buttonList: list[GamePadButton] = []

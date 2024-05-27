@@ -78,11 +78,16 @@ class BetterCombobox(ttk.Combobox):
     def get(self):                              
         if self.dict:
             #v = self.get()
-            d =ttk.Combobox.get(self)
-            myKeys = list(self.dict.keys())
-            myVals = list(self.dict.values())
-            myIndex = myVals.index(d)
-            result = myKeys[myIndex]
+            result = ''
+            try:
+                d =ttk.Combobox.get(self)
+                myKeys = list(self.dict.keys())
+                myVals = list(self.dict.values())
+                myIndex = myVals.index(d)
+                result = myKeys[myIndex]
+            
+            except:
+                pass
             return result #self.dict[ttk.Combobox.get(self)]
         else:
             return ttk.Combobox.get(self)

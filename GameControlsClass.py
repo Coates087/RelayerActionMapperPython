@@ -155,9 +155,6 @@ class GameControls:
         strNew = strNew.replace("CtrlS","Ctrl+S")
         strNew = strNew.replace("CtrlA","Ctrl+A")
 
-        print('serialize')
-        print(strNew)
-
         obj = json.loads(strNew)
         
         obj3 = delete_prop_recursive(obj,"XBoxButton")
