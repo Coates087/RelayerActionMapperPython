@@ -98,6 +98,34 @@ class BetterCombobox(ttk.Combobox):
     def get_value(self):                              
         return self.get()
     
+    
+    # overwrite `get()` to return `value` instead of `key`
+    def set(self, value:any):                              
+        if self.dict:
+            #v = self.get()
+            result = ''
+            myIndex = 0
+            try:
+                #call(self._w, "set", value)
+                #ttk.Combobox.set()
+                # =ttk.Combobox.get(self)
+                myKeys = list(self.dict.keys())
+                myVals = list(self.dict.values())
+                myIndex = myKeys.index(value)
+                result = myKeys[myIndex]
+                self.current(myIndex)
+            except:
+                pass
+            #self.dict[ttk.Combobox.get(self)]
+        else:
+            self.current(myIndex)
+
+    # def get_key(self):
+    #     return ttk.Combobox.get(self)
+
+    # def get_value(self):                              
+    #     return self.get()
+    
 
 def vars_recursive(obj, key1:str =''):
     objFinal = vars(obj)

@@ -1,3 +1,4 @@
+from ast import Constant
 import io, base64
 import time
 import tkinter as tk
@@ -41,8 +42,19 @@ allDropdowns: list[BetterCombobox] = []
 global allButtons
 allButtons: list[tk.Button] = []
 
+global allLabels
+allLabels:tk.Text = []
+
 global rdoInputType
 rdoInputType:tk.StringVar = None
+
+#@Constant
+global ConstButtonName 
+ConstButtonName:str = 'ButtonName'
+global ConstKeyCode
+ConstKeyCode:str = 'KeyCode'
+global ConstKeyField
+ConstKeyField:str = 'KeyField'
 
 def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrls:GameControls):
     #global myPreview
@@ -62,6 +74,9 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
     global myGameContrls
     myGameContrls = myTempGameContrls
 
+    global localGameContrls
+    localGameContrls =deepcopy(myTempGameContrls)
+    
     try:
         testStr = GameControls.Serialize(myGameContrls) #myGameContrls.Serialize()
         tempContrls =GameControls.Deserialize(testStr)
@@ -72,7 +87,7 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
 
     if not updateControlForm == None:
         updateControlForm.grab_set() # forces focus on form
-    LoadImages(updateControlForm)
+    LoadForm(updateControlForm)
     #LoadForm()
    
 
@@ -105,68 +120,41 @@ def LoadKeyDialog(eventIndex:str='0', buttonName:str=''):
     #obj = GameControls(**json.loads(strJson))
 
 
-def LoadForm():
-    root = tk.Tk()
-    root.grid_rowconfigure(0, weight=1)
-    root.columnconfigure(0, weight=1)
+def InputModeChange():
+    
+    myXboxButtons = getXboxButtons()
+    aLength = myXboxButtons.__len__()
 
-    frame_main = tk.Frame(root, bg="gray")
-    frame_main.grid(sticky='news')
+    myXboxSticks = getXboxSticks()
+    aLength2 = myXboxSticks.__len__()
 
-    label1 = tk.Label(frame_main, text="Label 1", fg="green")
-    label1.grid(row=0, column=0, pady=(5, 0), sticky='nw')
+    myActions:list[str] = deepcopy(myXboxButtons)
+    myActions.extend(myXboxSticks)
+    ## lightblue
+    global allDropdowns
+    global allButtons
+    global allLabels
 
-    label2 = tk.Label(frame_main, text="Label 2", fg="blue")
-    label2.grid(row=1, column=0, pady=(5, 0), sticky='nw')
+    global rdoInputType
+    intInputType = rdoInputType.get()
 
-    label3 = tk.Label(frame_main, text="Label 3", fg="red")
-    label3.grid(row=3, column=0, pady=5, sticky='nw')
+    if intInputType == '1':
+        for index, aButton in enumerate(allButtons):
+            aButton.configure(state=tk.DISABLED, bg="#ebebeb")
+            pass
+        pass
+    else:
+        for index, aButton in enumerate(allButtons):
+            anXboxButton = myActions[index]
 
-    # Create a frame for the canvas with non-zero row&column weights
-    frame_canvas = tk.Frame(frame_main)
-    frame_canvas.grid(row=2, column=0, pady=(5, 0), sticky='nw')
-    frame_canvas.grid_rowconfigure(0, weight=1)
-    frame_canvas.grid_columnconfigure(0, weight=1)
-    # Set grid_propagate to False to allow 5-by-5 buttons resizing later
-    frame_canvas.grid_propagate(False)
+            if not anXboxButton.startswith("xbox_left_stick_"):
+                aButton.configure(state=tk.NORMAL, bg="lightblue")
+            pass
+        pass
 
-    # Add a canvas in that frame
-    canvas = tk.Canvas(frame_canvas, bg="yellow")
-    canvas.grid(row=0, column=0, sticky="news")
+    pass
 
-    # Link a scrollbar to the canvas
-    vsb = tk.Scrollbar(frame_canvas, orient="vertical", command=canvas.yview)
-    vsb.grid(row=0, column=1, sticky='ns')
-    canvas.configure(yscrollcommand=vsb.set)
-    # Create a frame to contain the buttons
-    frame_buttons = tk.Frame(canvas, bg="blue")
-    canvas.create_window((0, 0), window=frame_buttons, anchor='nw')
-
-    # Add 9-by-5 buttons to the frame
-    rows = 9
-    columns = 5
-    buttons = [[tk.Button() for j in range(columns)] for i in range(rows)]
-    for i in range(0, rows):
-        for j in range(0, columns):
-            buttons[i][j] = tk.Button(frame_buttons, text=("%d,%d" % (i+1, j+1)))
-            buttons[i][j].grid(row=i, column=j, sticky='news')
-
-    # Update buttons frames idle tasks to let tkinter calculate buttons sizes
-    frame_buttons.update_idletasks()
-
-    # Resize the canvas frame to show exactly 5-by-5 buttons and the scrollbar
-    first5columns_width = sum([buttons[0][j].winfo_width() for j in range(0, 5)])
-    first5rows_height = sum([buttons[i][0].winfo_height() for i in range(0, 5)])
-    frame_canvas.config(width=first5columns_width + vsb.winfo_width(),
-                        height=first5rows_height)
-
-    # Set the canvas scrolling region
-    canvas.config(scrollregion=canvas.bbox("all"))
-
-    # Launch the GUI
-    root.mainloop()
-
-def LoadImages(myGlobalForm:tk.Misc):
+def LoadForm(myGlobalForm:tk.Misc):
 
     frame_top =tk.Frame(myGlobalForm, width=2000, height=550)
     frame_main = tk.Frame(frame_top, width=400, height=500)
@@ -174,21 +162,20 @@ def LoadImages(myGlobalForm:tk.Misc):
     radio_frame = tk.Frame(frame_top)
     radio_frame.grid()
     radio_frame.grid_columnconfigure((0,1,2), weight=1, uniform="equal")
-    #frame_main.pack(fill=tk.BOTH, side=tk.LEFT, expand=0)
 
-    ##frame_top.pack(fill=tk.BOTH, side=tk.LEFT, expand=0, anchor=tk.NW)
     global rdoInputType
     rdoInputType = tk.StringVar()
     rdoInputType.set(0)
 
-    rdoKey = tk.Radiobutton(radio_frame, text="Edit for Keyboard and Gamepad", variable=rdoInputType, value=0)
-    rdoPad = tk.Radiobutton(radio_frame, text="Edit for Controller Only", variable=rdoInputType, value=1)
+    rdoKey = tk.Radiobutton(radio_frame, text="Edit for Keyboard and Gamepad", variable=rdoInputType, value=0, command=InputModeChange)
+    rdoPad = tk.Radiobutton(radio_frame, text="Edit for Controller Only", variable=rdoInputType, value=1, command=InputModeChange)
     radio_frame.grid(row=1, column=0)
     frame_top.place(x=1,y=1)
-    myCanvas  = tk.Canvas(frame_main,bg="yellow", width=700, height=400)
+    myCanvas  = tk.Canvas(frame_main, width=680, height=400)
     myCanvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-    second_frame = tk.Frame(myCanvas, width = 1000, height = 600, bg="green")
+    second_frame = tk.Frame(myCanvas, width = 1000, height = 600, #bg="green"
+                            )
     second_frame.pack(expand=1)
 
     
@@ -201,7 +188,7 @@ def LoadImages(myGlobalForm:tk.Misc):
     myButtons = vars(xBtn)
 
     myKeys = myButtons.keys()
-    print(myKeys)
+    #print(myKeys)
     myXboxButtons = getXboxButtons()
     aLength = myXboxButtons.__len__()
 
@@ -218,6 +205,7 @@ def LoadImages(myGlobalForm:tk.Misc):
 
     global allDropdowns
     global allButtons
+    global allLabels
 
     # Xbox Buttons
     for r in range(aLength):
@@ -228,15 +216,20 @@ def LoadImages(myGlobalForm:tk.Misc):
         myData:bytes =myButtons[anXboxButton]
         
         myImage2 = tk.PhotoImage(data=myData,format="png",width=70,height=70)
-        lbl = tk.Label(mySubFrame, image=myImage2, bg="#B1B1B1")
+        lbl = tk.Label(mySubFrame, image=myImage2, bg="#E5E5E5")
 
+        myKeys = getControlSetting(anXboxButton)
         ## Grid Style
         specialFrame = tk.Frame(mySubFrame)
         lbl.grid(column=0,row=0, rowspan=2)
         lbl.image = myImage2 # save the image reference
-        strSample = "Sample "+ str(r) + "-" + str(0)
+
+        keyList:list[str] = myKeys[ConstKeyCode]  
+        strSample = ', '.join(keyList)  
         myLable1:tk.Text = myControl.createTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
-        myLable1.configure(bg="#E5E5E5")
+        
+        myLable1.configure(bg="#E5E5E5", padx=5)
+        allLabels.append(myLable1)
         myLable1.grid(column=1,row=1, rowspan=1)
         
         #button_var = tk.StringVar(value=aButtonId)
@@ -245,16 +238,24 @@ def LoadImages(myGlobalForm:tk.Misc):
         allButtons.append(btnKeys1)
 
         specialFrame.grid(column=1,row=0, sticky="SW")
+
+        if anXboxButton.startswith("xbox_left_stick_"):
+           btnKeys1.configure(state=tk.DISABLED, bg="#ebebeb")
+
         btnKeys1.grid(column=0,row=0, sticky="SW")
 
-        optionVar = tk.StringVar(name='GamePadButtonName', value='GamePadButtonValue')
-        optionVar.set(myButtonOptions[0].GamePadButtonValue)
+        # optionVar = tk.StringVar(name='GamePadButtonName', value='GamePadButtonValue')
+        # optionVar.set(myKeys[ConstButtonName])
+        
         aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
-        
-        
+        aDropDown.configure(state="readonly")
         allDropdowns.append(aDropDown)
 
-        aDropDown.grid(column=1,row=0, sticky="SW")
+        if not anXboxButton == "xbox_left_stick":
+            #aDropDown.current(1)
+            aDropDown.set(myKeys[ConstButtonName])
+            aDropDown.grid(column=1,row=0, padx=2, sticky="SW")
+            
         mySubFrame.grid(row=r,column=0)
 
     # Xbox Sticks
@@ -271,13 +272,18 @@ def LoadImages(myGlobalForm:tk.Misc):
         img.configure(width=70,height=70)
         lbl = tk.Label(mySubFrame, image=img, bg="#FFFFFF")
 
+        myKeys = getControlSetting(anXboxButton)
         ## Grid Style
         specialFrame = tk.Frame(mySubFrame)
         lbl.grid(column=0,row=0, rowspan=2)
         lbl.image = img # save the image reference
-        strSample = "Sample "+ str(r) + "-" + str(0)
+
+        keyList:list[str] = myKeys[ConstKeyCode]  
+        strSample = ', '.join(keyList)  
+        #strSample = "Sample "+ str(r) + "-" + str(0)
         myLable1:tk.Text = myControl.createTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
-        myLable1.configure(bg="#E5E5E5")
+        myLable1.configure(bg="#E5E5E5", padx=5)
+        allLabels.append(myLable1)
         myLable1.grid(column=1,row=1, rowspan=1)
         
         buttonIndexFinal = (r + aLength)
@@ -286,25 +292,42 @@ def LoadImages(myGlobalForm:tk.Misc):
         allButtons.append(btnKeys1)
 
         specialFrame.grid(column=1,row=0, sticky="SW")
+
+        
+        if anXboxButton.startswith("xbox_left_stick_"):
+           btnKeys1.configure(state=tk.DISABLED, bg="#ebebeb")
+
         btnKeys1.grid(column=0,row=0, sticky="SW")
 
-        optionVar = tk.StringVar(name='GamePadButtonName', value='GamePadButtonValue')
-        optionVar.set(myButtonOptions[0].GamePadButtonValue)
-        aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
+        # optionVar = tk.StringVar(name='GamePadButtonName', value='GamePadButtonValue')
+        # optionVar.set(myButtonOptions[0].GamePadButtonValue)
+        # aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
         
+        # allDropdowns.append(aDropDown)
+
+        
+        aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
+        aDropDown.configure(state="readonly")
         allDropdowns.append(aDropDown)
 
-        aDropDown.grid(column=1,row=0, sticky="SW")
+        if not anXboxButton == "xbox_left_stick":
+            #aDropDown.current(1)
+            aDropDown.set(myKeys[ConstButtonName])
+            aDropDown.grid(column=1,row=0, padx=2, sticky="SW")
+        
         mySubFrame.grid(row=r,column=1)
     
 
     myCanvas.grid(row=0, column=0, sticky="news")
     
     y_scrollbar = tk.Scrollbar(frame_main, orient=tk.VERTICAL, command=myCanvas.yview)
-    y_scrollbar.grid(column=2, row=0, sticky="NS")
-    #y_scrollbar.pack(side=tk.RIGHT,fill=tk.Y)
+    y_scrollbar.configure(width=25, )
+    y_scrollbar.grid(column=1, row=0, sticky="NEWS"
+                     )
+    #y_scrollbar.pack( side = tk.RIGHT )
     myCanvas.configure(yscrollcommand=y_scrollbar.set)
-    #y_scrollbar.pack(side=tk.RIGHT,fill=tk.Y)
+
+    #second_frame.configure()
     
 
     myCanvas.config(scrollregion=myCanvas.bbox("all"))
@@ -315,6 +338,150 @@ def LoadImages(myGlobalForm:tk.Misc):
     myGlobalForm.mainloop()
     return (True)
 
+
+def getControlSetting(actionId:str):
+    global localGameContrls
+
+    global ConstButtonName 
+    global ConstKeyCode
+    global ConstKeyField
+
+    tempList:list[str] = []
+    resultDict: dict[str,any] = {}
+
+    resultDict[ConstButtonName] = ''
+    resultDict[ConstKeyField] = ''
+    resultDict[ConstKeyCode] = tempList
+
+    match actionId:
+        case "xbox_start":
+            resultDict[ConstButtonName] = localGameContrls.Escape.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.Escape.KeyCode
+            resultDict[ConstKeyField] = "Escape"
+            pass
+        case "xbox_back":
+            resultDict[ConstButtonName] = localGameContrls.V.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.V.KeyCode
+            resultDict[ConstKeyField] = "V"
+            pass
+        case "xbox_A":
+            resultDict[ConstButtonName] = localGameContrls.Enter.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.Enter.KeyCode
+            resultDict[ConstKeyField] = "Enter"
+            pass
+        case "xbox_B":
+            resultDict[ConstButtonName] = localGameContrls.Backspace.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.Backspace.KeyCode
+            resultDict[ConstKeyField] = "Backspace"
+            pass
+        case "xbox_X":
+            resultDict[ConstButtonName] = localGameContrls.Tab.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.Tab.KeyCode
+            resultDict[ConstKeyField] = "Tab"
+            pass
+        case "xbox_Y":
+            resultDict[ConstButtonName] = localGameContrls.Shift.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.Shift.KeyCode
+            resultDict[ConstKeyField] = "Shift"
+            pass
+        case "xbox_LB":
+            resultDict[ConstButtonName] = localGameContrls.Q.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.Q.KeyCode
+            resultDict[ConstKeyField] = "Q"
+            pass
+        case "xbox_RB":
+            resultDict[ConstButtonName] = localGameContrls.E.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.E.KeyCode
+            resultDict[ConstKeyField] = "E"
+            pass
+        case "xbox_LT":
+            resultDict[ConstButtonName] = localGameContrls.WheelUp.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.WheelUp.KeyCode # [ "None" ]
+            resultDict[ConstKeyField] = "WheelUp"
+            pass
+        case "xbox_RT":
+            resultDict[ConstButtonName] = localGameContrls.WheelDown.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.WheelDown.KeyCode # [ "None" ]
+            resultDict[ConstKeyField] = "WheelDown"
+            pass
+        case "xbox_dpad_Up":
+            resultDict[ConstButtonName] = localGameContrls.W.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.W.KeyCode
+            resultDict[ConstKeyField] = "W"
+            pass
+        case "xbox_dpad_Down":
+            resultDict[ConstButtonName] = localGameContrls.S.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.S.KeyCode
+            resultDict[ConstKeyField] = "S"
+            pass
+        case "xbox_dpad_Left":
+            resultDict[ConstButtonName] = localGameContrls.A.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.A.KeyCode
+            resultDict[ConstKeyField] = "A"
+            pass
+        case "xbox_dpad_Right":
+            resultDict[ConstButtonName] = localGameContrls.D.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.D.KeyCode
+            resultDict[ConstKeyField] = "D"
+        case "xbox_left_stick":
+            # resultDict[ConstButtonName] = # localGameContrls.Ctrl..ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.Ctrl.KeyCode
+            resultDict[ConstKeyField] = "Ctrl"
+            pass
+        case "xbox_left_stick_Up":
+            resultDict[ConstButtonName] = localGameContrls.CtrlW.ButtonName
+            resultDict[ConstKeyCode] = ['[Control] + [W]']
+            resultDict[ConstKeyField] = "CtrlW"
+            pass
+        case "xbox_left_stick_Down":
+            resultDict[ConstButtonName] = localGameContrls.CtrlS.ButtonName
+            resultDict[ConstKeyCode] = ['[Control] + [S]']
+            resultDict[ConstKeyField] = "CtrlS"
+            pass
+        case "xbox_left_stick_Left":
+            resultDict[ConstButtonName] = localGameContrls.CtrlA.ButtonName
+            resultDict[ConstKeyCode] = ['[Control] + [A]']
+            resultDict[ConstKeyField] = "CtrlA"
+            pass
+        case "xbox_left_stick_Right":
+            resultDict[ConstButtonName] = localGameContrls.CtrlD.ButtonName
+            resultDict[ConstKeyCode] = ['[Control] + [D]']
+            resultDict[ConstKeyField] = "CtrlD"
+            pass
+        case "xbox_left_stick_click":
+            resultDict[ConstButtonName] = localGameContrls.F.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.F.KeyCode
+            resultDict[ConstKeyField] = "F"
+            pass
+        
+        case "xbox_right_stick_Up":
+            resultDict[ConstButtonName] = localGameContrls.UpArrow.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.UpArrow.KeyCode
+            resultDict[ConstKeyField] = "UpArrow"
+            pass
+        case "xbox_right_stick_Down":
+            resultDict[ConstButtonName] = localGameContrls.DownArrow.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.DownArrow.KeyCode
+            resultDict[ConstKeyField] = "DownArrow"
+            pass
+        case "xbox_right_stick_Left":
+            resultDict[ConstButtonName] = localGameContrls.LeftArrow.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.LeftArrow.KeyCode
+            resultDict[ConstKeyField] = "LeftArrow"
+            pass
+        case "xbox_right_stick_Right":
+            resultDict[ConstButtonName] = localGameContrls.RightArrow.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.RightArrow.KeyCode
+            resultDict[ConstKeyField] = "RightArrow"
+            pass
+        case "xbox_right_stick_click":
+            resultDict[ConstButtonName] = localGameContrls.R.ButtonName
+            resultDict[ConstKeyCode] = localGameContrls.R.KeyCode
+            resultDict[ConstKeyField] = "R"
+            pass
+        case _:
+            pass
+    return resultDict
 
 def getXboxOptions():
     buttonList: list[GamePadButton] = []
