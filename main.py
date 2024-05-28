@@ -23,6 +23,11 @@ root = tk.Tk()
 # global myPreview
 # myPreview = tk.Tk()#tk.Toplevel()
 
+## also try PyInstaller
+
+## for compiling this program: 
+## python -m PyInstaller --clean --onefile --noconsole --icon "../resource_objects/RelayerIcon.png" --specpath "./build/" --distpath  "./build/dist/" main.py --name "Relayer Action Mapper Python" 
+
 pixel = tk.PhotoImage(width=1, height=1)
 global fileContents
 fileContents: str = ""
