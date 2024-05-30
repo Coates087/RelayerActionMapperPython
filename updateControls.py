@@ -38,12 +38,20 @@ localGameContrls:GameControls = None
 global allDropdowns
 allDropdowns: list[BetterCombobox] = []
 ## https://stackoverflow.com/a/45442534
-
+#str,any
 global allButtons
 allButtons: list[tk.Button] = []
 
 global allLabels
 allLabels:tk.Text = []
+
+
+global keyDropdowns
+keyDropdowns: dict[str,BetterCombobox] = {}
+global keyButtons
+keyButtons: dict[str,tk.Button] = {}
+global keyLabels
+keyLabels: dict[str,tk.Text] = {}
 
 global rdoInputType
 rdoInputType:tk.StringVar = None
@@ -134,6 +142,9 @@ def InputModeChange():
     global allDropdowns
     global allButtons
     global allLabels
+    global keyDropdowns
+    global keyButtons
+    global keyLabels
 
     global rdoInputType
     intInputType = rdoInputType.get()
@@ -202,10 +213,14 @@ def LoadForm(myGlobalForm:tk.Misc):
     for index, definition in enumerate(myButtonOptions):
         myButtonNames.append(definition.GamePadButtonName)
         myButtonValues.append(definition.GamePadButtonValue)
-
+    # lists
     global allDropdowns
     global allButtons
     global allLabels
+    # dictionaries
+    global keyDropdowns
+    global keyButtons
+    global keyLabels
 
     # Xbox Buttons
     for r in range(aLength):
@@ -230,12 +245,14 @@ def LoadForm(myGlobalForm:tk.Misc):
         
         myLable1.configure(bg="#E5E5E5", padx=5)
         allLabels.append(myLable1)
+        keyLabels[anXboxButton] = myLable1
         myLable1.grid(column=1,row=1, rowspan=1)
         
         #button_var = tk.StringVar(value=aButtonId)
         btnKeys1:tk.Button = myControl.createButton(controlMaster=specialFrame, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=lambda buttonIndex=r, buttonName=anXboxButton: LoadKeyDialog(buttonIndex, buttonName))
        
         allButtons.append(btnKeys1)
+        keyButtons[anXboxButton] = btnKeys1
 
         specialFrame.grid(column=1,row=0, sticky="SW")
 
@@ -250,6 +267,7 @@ def LoadForm(myGlobalForm:tk.Misc):
         aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
         aDropDown.configure(state="readonly")
         allDropdowns.append(aDropDown)
+        keyDropdowns[anXboxButton] = aDropDown
 
         if not anXboxButton == "xbox_left_stick":
             #aDropDown.current(1)
@@ -284,12 +302,14 @@ def LoadForm(myGlobalForm:tk.Misc):
         myLable1:tk.Text = myControl.createTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
         myLable1.configure(bg="#E5E5E5", padx=5)
         allLabels.append(myLable1)
+        keyLabels[anXboxButton] = myLable1
         myLable1.grid(column=1,row=1, rowspan=1)
         
         buttonIndexFinal = (r + aLength)
         btnKeys1:tk.Button = myControl.createButton(controlMaster=specialFrame, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=lambda buttonIndex=buttonIndexFinal, buttonName=anXboxButton: LoadKeyDialog(buttonIndex, buttonName))
        
         allButtons.append(btnKeys1)
+        keyButtons[anXboxButton] = btnKeys1
 
         specialFrame.grid(column=1,row=0, sticky="SW")
 
@@ -309,6 +329,7 @@ def LoadForm(myGlobalForm:tk.Misc):
         aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
         aDropDown.configure(state="readonly")
         allDropdowns.append(aDropDown)
+        keyDropdowns[anXboxButton] = aDropDown
 
         if not anXboxButton == "xbox_left_stick":
             #aDropDown.current(1)
