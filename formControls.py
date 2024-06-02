@@ -69,7 +69,7 @@ class BetterCombobox(ttk.Combobox):
         ttk.Combobox.__init__(self,master=master, values=optionVals2)
 
         # assign some function
-        self.bind('<<ComboboxSelected>>', self.on_select)
+        # self.bind('<<ComboboxSelected>>', self.on_select)
 
     def on_select(self, event):
         print(self.get(), self.get_key(), self.get_value())

@@ -14,6 +14,8 @@ from resource_files.xbox_buttons import xBtn
 from GameControlsClass import GameControls, GamePadButton
 from tkinter.tix import ScrolledWindow
 from copy import copy, deepcopy
+#from sys import platform as os_sys
+import platform as os_sys
 
 
 
@@ -64,9 +66,28 @@ ConstKeyCode:str = 'KeyCode'
 global ConstKeyField
 ConstKeyField:str = 'KeyField'
 
+global strScrollActions
+strScrollActions:list[str] = []
+
+
 def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrls:GameControls):
     #global myPreview
 
+    global strScrollActions
+
+    strMac = 'Darwin' # Macs system name is called "Darwin"
+
+    # we need to determent the os in order to properly unbind and rebind the mouse scroll os_sys
+    strMyOS = os_sys.uname().system
+
+
+
+    if strMyOS == 'Windows' or  strMyOS == strMac:
+        strScrollActions.append('<MouseWheel>')
+    else: # Linux
+        strScrollActions.append('<ButtonPress-4>')
+        strScrollActions.append('<ButtonPress-5>')
+        
     updateControlForm = tk.Toplevel()
     updateControlForm.geometry("780x680") # size of main window
     updateControlForm.title("Update Controls")
@@ -105,17 +126,19 @@ def LoadKeyDialog(eventIndex:str='0', buttonName:str=''):
     widgetIndex = buttonName
     #print(rdoInputType.get())
     try:
-        global allButtons
+        global keyButtons
 
-        temp1 =allButtons[eventIndex]
+        temp1 =keyButtons[buttonName]
+
 
         valID = temp1.winfo_id()
 
-        global allDropdowns
-        temp2 = allDropdowns[0]
+
+        global keyDropdowns
+        temp2 = keyDropdowns[buttonName]
 
         val = temp2.get()
-        print(temp1)
+        print(val)
         # do something
         # obj:GameControls = GameControls.Deserialize(jsonFileData)
         # print(obj.CtrlD.ButtonName)
@@ -165,6 +188,18 @@ def InputModeChange():
 
     pass
 
+def ComboScrollOnOpen(self, event, buttonNameKey:str=''): ## self, event, 
+    global keyDropdowns
+
+    temp1 =keyDropdowns[buttonNameKey]
+
+    
+    if not buttonNameKey == "xbox_left_stick":
+        pass
+    # "break" which will prevent default bindings from being processed
+    return "break" 
+
+
 def LoadForm(myGlobalForm:tk.Misc):
 
     frame_top =tk.Frame(myGlobalForm, width=2000, height=550)
@@ -189,11 +224,6 @@ def LoadForm(myGlobalForm:tk.Misc):
                             )
     second_frame.pack(expand=1)
 
-    
-    
-
-    # rdoKey.pack(fill=tk.BOTH, side=tk.TOP, anchor=tk.NW)
-    # rdoPad.pack(fill=tk.X, side=tk.TOP, anchor=tk.NW)
     rdoKey.grid(row=1, column=1, sticky=tk.NW)
     rdoPad.grid(row=1, column=2, sticky=tk.NW)
     myButtons = vars(xBtn)
@@ -213,6 +243,7 @@ def LoadForm(myGlobalForm:tk.Misc):
     for index, definition in enumerate(myButtonOptions):
         myButtonNames.append(definition.GamePadButtonName)
         myButtonValues.append(definition.GamePadButtonValue)
+
     # lists
     global allDropdowns
     global allButtons
@@ -221,6 +252,9 @@ def LoadForm(myGlobalForm:tk.Misc):
     global keyDropdowns
     global keyButtons
     global keyLabels
+
+
+    global strScrollActions
 
     # Xbox Buttons
     for r in range(aLength):
@@ -266,8 +300,24 @@ def LoadForm(myGlobalForm:tk.Misc):
         
         aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
         aDropDown.configure(state="readonly")
+
+        
+        for strScroll in strScrollActions:
+            myResult = aDropDown.bindtags()
+            aDropDown.unbind_class("TCombobox", strScroll)
+            
+            #aDropDown.bind(strScroll,lambda buttonNameKey=anXboxButton: ComboScrollOnOpen(aDropDown, buttonNameKey, buttonNameKey))
+            pass
+            
+
         allDropdowns.append(aDropDown)
         keyDropdowns[anXboxButton] = aDropDown
+
+        
+        # for strScroll in strScrollActions:
+        #     aDropDown.unbind_class("TCombobox", strScroll)
+
+        #ComboScrollOnOpen
 
         if not anXboxButton == "xbox_left_stick":
             #aDropDown.current(1)
@@ -328,6 +378,11 @@ def LoadForm(myGlobalForm:tk.Misc):
         
         aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
         aDropDown.configure(state="readonly")
+        
+        for strScroll in strScrollActions:
+            aDropDown.unbind_class("TCombobox", strScroll)
+            aDropDown.bind(strScroll,lambda buttonIndex=r, buttonName=anXboxButton: ComboScrollOnOpen(buttonName=buttonName))
+            
         allDropdowns.append(aDropDown)
         keyDropdowns[anXboxButton] = aDropDown
 
