@@ -6,7 +6,7 @@ from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
 import os
 from GameControlsClass import GameControls
 import constantsPython
-from formControls import pyControl
+from formControls import pyControl, BetterTextBox
 from previewFile import previewFileForm
 from updateControls import LoadpdateControlsForm
 import resource_files.xbox_buttons as xBtn
@@ -37,7 +37,7 @@ class defaultConfigOptions:
 
 
 global keyLabels
-keyLabels: dict[str,tk.Text] = {}
+keyLabels: dict[str,BetterTextBox] = {}
 
 ## also try PyInstaller
 
@@ -105,7 +105,7 @@ def main():
 
 
     
-    myLable11:tk.Text = myControl.createTextbox(controlMaster=root, controlText ="" , myWidth=90,myHeight=1,readOnly=True)
+    myLable11:BetterTextBox = myControl.createBetterTextbox(controlMaster=root, controlText ="" , myWidth=90,myHeight=1,readOnly=True)
 
     myLable11.configure(bg="#E5E5E5", padx=5, borderwidth=2, relief= "solid")
 
@@ -194,17 +194,12 @@ def openConfigFile():
             myGameContrls = obj
             
             global keyLabels
-            lblFile = keyLabels['load-file'] #t
-            tk.Text
+            lblFile = keyLabels['load-file'] #tk.Text
 
             if not lblFile == None:
                 fileNameOnly:str = os.path.basename(myFileName) ## test this in linux
                 labelText = "File Loaded: " + fileNameOnly
-                lblFile.config(state='normal')
-                #oldText = lblFile.get("1.0",tk.END) # get text value
-                lblFile.delete("1.0",tk.END) # clears textbox
-                lblFile.insert(tk.INSERT, labelText)
-                lblFile.config(state='disabled')
+                lblFile.set_value(labelText)
             
 
             print("success")

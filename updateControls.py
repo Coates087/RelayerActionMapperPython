@@ -8,7 +8,7 @@ import json
 from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
 import os
 import constantsPython
-from formControls import pyControl, BetterCombobox
+from formControls import pyControl, BetterCombobox, BetterTextBox
 from previewFile import previewFileForm
 from resource_files.xbox_buttons import xBtn
 from GameControlsClass import GameControls, GamePadButton
@@ -45,7 +45,7 @@ global allButtons
 allButtons: list[tk.Button] = []
 
 global allLabels
-allLabels:tk.Text = []
+allLabels:list[BetterTextBox] = []
 
 
 global keyDropdowns
@@ -53,7 +53,7 @@ keyDropdowns: dict[str,BetterCombobox] = {}
 global keyButtons
 keyButtons: dict[str,tk.Button] = {}
 global keyLabels
-keyLabels: dict[str,tk.Text] = {}
+keyLabels: dict[str,BetterTextBox] = {}
 
 global rdoInputType
 rdoInputType:tk.StringVar = None
@@ -275,7 +275,7 @@ def LoadForm(myGlobalForm:tk.Misc):
 
         keyList:list[str] = myKeys[ConstKeyCode]  
         strSample = ', '.join(keyList)  
-        myLable1:tk.Text = myControl.createTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
+        myLable1:BetterTextBox = myControl.createBetterTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
         
         myLable1.configure(bg="#E5E5E5", padx=5)
         allLabels.append(myLable1)
@@ -349,7 +349,7 @@ def LoadForm(myGlobalForm:tk.Misc):
         keyList:list[str] = myKeys[ConstKeyCode]  
         strSample = ', '.join(keyList)  
         #strSample = "Sample "+ str(r) + "-" + str(0)
-        myLable1:tk.Text = myControl.createTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
+        myLable1:BetterTextBox = myControl.createBetterTextBox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
         myLable1.configure(bg="#E5E5E5", padx=5)
         allLabels.append(myLable1)
         keyLabels[anXboxButton] = myLable1

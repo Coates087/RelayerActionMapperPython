@@ -21,6 +21,16 @@ class pyControl:
         myTexbox.configure(width=myWidth,height=myHeight, font=(controlFont), state=textboxState)
         #myTexbox.master = controlMaster
         return myTexbox
+        
+    def createBetterTextbox(controlMaster: tk.Misc, controlText="", controlFont="Segoe 9",myWidth:int=50,myHeight:int=23, readOnly=False):
+        textboxState = 'normal'
+        if readOnly == True:
+            textboxState = 'disabled'
+        myTexbox = BetterTextBox(controlMaster)
+        myTexbox.set_value(controlText)
+        myTexbox.configure(width=myWidth,height=myHeight, font=(controlFont), state=textboxState)
+        #myTexbox.master = controlMaster
+        return myTexbox
     
     def createMultilineTextbox(controlMaster: tk.Misc, controlText="", controlFont="Segoe 9",myWidth:int=50,myHeight:int=23, readOnly=False):
         textboxState = 'normal'
@@ -32,6 +42,25 @@ class pyControl:
         #myTexbox = ScrolledText(controlMaster, image=myPixel,text=controlText,width=myWidth,height=myHeigt, font=(controlFont), compound="left", state=textboxState)
         #myTexbox.master = controlMaster
         return myTexbox
+
+
+class BetterTextBox(tk.Text):
+    def get_value(self):
+        self.get("1.0",tk.END) # get textbox value
+        pass
+    
+    def set_value(self,labelText:str=''):
+        myStatus =self["state"]
+
+        if myStatus == "disabled":
+            self.config(state='normal')
+
+        self.delete("1.0",tk.END) # clears textbox
+        self.insert(tk.INSERT, labelText) # sets textbox value
+        
+        if myStatus == "disabled":
+            self.config(state='disabled')
+        pass
 
 ## Source: https://stackoverflow.com/a/41369025    
 class BetterCombobox(ttk.Combobox):
