@@ -208,7 +208,7 @@ def prepDefaultConfig(strType:str =''):
 
 def prepSaveConfig():
     global myGameContrls
-    strJson = myGameContrls.Serialize()
+    strJson = myGameContrls.Serialize(4)
     saveConfigFile(strJson, True)
     pass
 

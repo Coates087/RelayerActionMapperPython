@@ -131,7 +131,7 @@ class GameControls:
         obj:GameControls = GameControls(**obj1)
         return obj
     
-    def Serialize(self):
+    def Serialize(self, myIndent:int=0):
         #[a for a in dir(self) if not a.startswith('__') and not callable(getattr(obj, a))]
         #obj = vars(self)
         obj1 = deepcopy(self) ##GameControls(**self)
@@ -149,7 +149,7 @@ class GameControls:
         obj3 = delete_prop_recursive(obj,"XBoxButton")
         
         self = GameControls(**obj2)
-        strFinal = json.dumps(obj3)
+        strFinal = json.dumps(obj3, indent=myIndent)
         return strFinal
     
 def delete_prop_recursive(obj, keyToRemove = ''):
