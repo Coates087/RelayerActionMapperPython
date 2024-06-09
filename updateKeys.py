@@ -11,6 +11,8 @@ from copy import copy, deepcopy
 #from sys import platform as os_sys
 import platform as os_sys
 
+import updateControls # .childWin
+
 global keyDropdowns
 keyDropdowns: dict[str,BetterCombobox] = {}
 global keyButtons
@@ -33,6 +35,9 @@ ConstKeyCode:str = 'KeyCode'
 global ConstKeyField
 ConstKeyField:str = 'KeyField'
 
+global newControls
+newControls:bool = False
+
 global strScrollActions
 strScrollActions:list[str] = []
 
@@ -51,6 +56,9 @@ indexKey:int = 0
 global strKey
 strKey:str = 'Index-'
 
+global strAction
+strAction:str = ''
+
 global frame_main
 frame_main:tk.Frame = None
 
@@ -68,18 +76,28 @@ lblKey:BetterTextBox = None
 
 myControl = pyControl
 
+global myParent
+myParent: tk.Misc
+
 def LoadpdateKeysForm(controlMaster: tk.Misc, strActionName:str, myTempGameContrls:GameControls):
     global keyControlForm
 
     global strScrollActions
     strScrollActions = []
 
+    global newControls
+    newControls = False
+    
+    global myParent
+    myParent =controlMaster
+
+    global strAction
+    strAction = strActionName
+
     strMac = 'Darwin' # Macs system name is called "Darwin"
 
     # we need to determent the os in order to properly unbind and rebind the mouse scroll os_sys
     strMyOS = os_sys.uname().system
-
-
 
     if strMyOS == 'Windows' or  strMyOS == strMac:
         strScrollActions.append('<MouseWheel>')
@@ -106,10 +124,15 @@ def LoadpdateKeysForm(controlMaster: tk.Misc, strActionName:str, myTempGameContr
     LoadFormContent(keyControlForm,strActionName)
     if not keyControlForm == None:
         keyControlForm.grab_set() # forces focus on form
+        keyControlForm.transient(controlMaster) # set to be on top of the main window
+        # child_window.transient(root) # set to be on top of the main window
+        # child_window.grab_set() # hijack all commands from the master (clicks on the main window are ignored)
+        # root.wait_window(child_window) # pause anything on the main window until this one closes
+        pass
 
 
 def AddKey():
-    print("AddKey")
+    # print("AddKey")
 
     global indexKey
     global frame_buttons
@@ -165,8 +188,21 @@ def RemoveKey(index):
 
 
 def SaveChanges():
-    print("SaveChanges")
+    # print("SaveChanges")
+    global myParent
     global keyControlForm
+    
+    global strAction
+    global newControls
+    newControls = True
+    
+    allKeycodes:list[str] =[]
+
+    allKeycodes = getAllDropdows()
+    ##.printData("Data")
+    
+    updateControls.childWin.storeKeyResults(strAction,allKeycodes)
+    keyControlForm.destroy()
     pass
 
 def CancelChanges():
@@ -176,6 +212,24 @@ def CancelChanges():
     keyControlForm.destroy()
     pass
 
+
+def getAllDropdows():
+    global keyDropdowns
+
+    allKeys = list(keyDropdowns.keys())
+
+    allKeyCodes:list[str] = []
+    
+    aLength = allKeys.__len__()
+    for r in range(aLength):
+        aKey = allKeys[r]
+        aDropDown = keyDropdowns[aKey]
+
+        newVal = aDropDown.get_value()
+        allKeyCodes.append(newVal)
+        pass
+
+    return allKeyCodes
 
 def updateKeyCount():
     # dictionaries

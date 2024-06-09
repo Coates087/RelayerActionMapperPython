@@ -13,7 +13,13 @@ from copy import copy, deepcopy
 import platform as os_sys
 
 from updateKeys import LoadpdateKeysForm
+# newControls, myGameContrls as keyformMyGameContrls
+#import updateKeys
 
+#import main as mainForm
+#from main import mainWin
+
+#mySelf = tk.Tk()
 
 myControl = pyControl
 
@@ -53,6 +59,9 @@ keyLabels: dict[str,BetterTextBox] = {}
 global rdoInputType
 rdoInputType:tk.StringVar = None
 
+global jsonLocalGameControls
+jsonLocalGameControls:str = ''
+
 #@Constant
 global ConstButtonName 
 ConstButtonName:str = 'ButtonName'
@@ -64,7 +73,115 @@ ConstKeyField:str = 'KeyField'
 global strScrollActions
 strScrollActions:list[str] = []
 
+global newControls
+newControls:bool = False
 
+class childWin:    
+    def storeKeyResults(myKey:str, myData:list[str]):
+        global myGameContrls
+        global localGameContrls
+        global keyLabels
+        global newControls
+        
+        match myKey:
+            case "xbox_start":
+                localGameContrls.Escape.KeyCode = myData
+                pass
+            case "xbox_back":
+                localGameContrls.V.KeyCode = myData
+                pass
+            case "xbox_A":
+                localGameContrls.Enter.KeyCode = myData
+                pass
+            case "xbox_B":
+                localGameContrls.Backspace.KeyCode = myData
+                pass
+            case "xbox_X":
+                localGameContrls.Tab.KeyCode = myData
+                pass
+            case "xbox_Y":
+                localGameContrls.Shift.KeyCode = myData
+                pass
+            case "xbox_LB":
+                localGameContrls.Q.KeyCode = myData
+                pass
+            case "xbox_RB":
+                localGameContrls.E.KeyCode = myData
+                pass
+            case "xbox_LT":
+                localGameContrls.WheelUp.KeyCode = myData
+                pass
+            case "xbox_RT":
+                localGameContrls.WheelDown.KeyCode = myData
+                pass
+            case "xbox_dpad_Up":
+                localGameContrls.W.KeyCode = myData
+                pass
+            case "xbox_dpad_Down":
+                localGameContrls.S.KeyCode = myData
+                pass
+            case "xbox_dpad_Left":
+                localGameContrls.A.KeyCode = myData
+                pass
+            case "xbox_dpad_Right":
+                localGameContrls.D.KeyCode = myData
+            case "xbox_left_stick":
+                localGameContrls.Ctrl.KeyCode = myData
+                pass
+            case "xbox_left_stick_click":
+                localGameContrls.F.KeyCode = myData
+                pass
+            
+            case "xbox_right_stick_Up":
+                localGameContrls.UpArrow.KeyCode = myData
+                pass
+            case "xbox_right_stick_Down":
+                localGameContrls.DownArrow.KeyCode = myData
+                pass
+            case "xbox_right_stick_Left":
+                localGameContrls.LeftArrow.KeyCode = myData
+                pass
+            case "xbox_right_stick_Right":
+                localGameContrls.RightArrow.KeyCode = myData
+                pass
+            case "xbox_right_stick_click":
+                localGameContrls.R.KeyCode = myData
+                pass
+            case _:
+                pass
+        strSample = ', '.join(myData)
+        keyLabels[myKey].set_value(strSample)
+
+        global jsonLocalGameControls
+        jsonLocalGameControls = localGameContrls.Serialize()
+        newControls = True
+        pass
+
+
+def SaveChanges():
+    # print("SaveChanges")
+    global localGameContrls
+    global updateControlForm    
+    global newControls
+    # newControls = True
+    
+    allKeycodes:list[str] =[]
+
+    strJSON =localGameContrls.Serialize()
+    
+    # import main as mainForm
+    from mainWindow import mainWin
+    mainWin.setGameControlChanges(True, strJSON)
+    #mainForm.mainWin.setGameControlChanges(True, strJSON)
+    updateControlForm.destroy()
+    pass
+
+def CancelChanges():
+    print("CancelChanges")
+    global updateControlForm
+
+    updateControlForm.destroy()
+    pass
 
 def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrls:GameControls):
     #global myPreview
@@ -113,8 +230,10 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
 
     if not updateControlForm == None:
         updateControlForm.grab_set() # forces focus on form
+        pass
+
     LoadForm(updateControlForm)
-    #LoadForm()
+    pass
    
 
 def LoadKeyDialog(eventIndex:str='0', buttonName:str=''):
@@ -128,18 +247,21 @@ def LoadKeyDialog(eventIndex:str='0', buttonName:str=''):
         global keyDropdowns
 
         global localGameContrls
+
+        #updateControlForm.master.printData("")
         LoadpdateKeysForm(updateControlForm,buttonName,localGameContrls)
-        # do something
-        # obj:GameControls = GameControls.Deserialize(jsonFileData)
-        # print(obj.CtrlD.ButtonName)
-        # print(obj.W)
-        # print(obj.W.KeyCode)
+
+        temp = localGameContrls.A.KeyCode
+        
+        
+        strJSON =  localGameContrls.Serialize()
+        pass
+
     except Exception as e:
         # handle it
         print("Error: " + e.args[0])
-     #= #json.loads(strJson)
-    #obj = GameControls(**json.loads(strJson))
-
+        pass
+    pass
 
 def InputModeChange():
     
@@ -216,6 +338,15 @@ def LoadForm(myGlobalForm:tk.Misc):
 
     rdoKey.grid(row=1, column=1, sticky=tk.NW)
     rdoPad.grid(row=1, column=2, sticky=tk.NW)
+
+
+    btnSave:tk.Button = myControl.createButton(controlMaster=myGlobalForm, myWidth=14,myHeight=1, controlText="Save", myCommand=SaveChanges)
+    btnSave.place(x=520,y=480)
+    
+    btnCancel:tk.Button = myControl.createButton(controlMaster=myGlobalForm, myWidth=14,myHeight=1, controlText="Cancel", myCommand=CancelChanges)
+    btnCancel.place(x=520,y=520)
+
+
     myButtons = vars(xBtn)
 
     myKeys = myButtons.keys()
