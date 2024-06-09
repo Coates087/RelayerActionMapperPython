@@ -129,8 +129,8 @@ def StartMain():
     btnKeyboard.place(x=configButtonX, y=300) # Setting button position 
 
 
-    btnBase64 = myControl.createButton(controlMaster=root, controlText="Convert Base 64", myCommand=openBase64File)
-    btnBase64.place(x=153, y=328) # Setting button position 
+    # btnBase64 = myControl.createButton(controlMaster=root, controlText="Convert Base 64", myCommand=openBase64File)
+    # btnBase64.place(x=153, y=328) # Setting button position 
 
 
     btnExit = myControl.createButton(controlMaster=root, controlText="Exit", myWidth=14, myCommand=close_win)
@@ -146,7 +146,7 @@ def StartMain():
     
     myLable12:BetterTextBox = myControl.createBetterTextbox(controlMaster=root, controlText ="" , myWidth=90,myHeight=1,readOnly=True)
 
-    myLable12.configure(bg="#EAEAEA", padx=5, borderwidth=2, relief= "solid", fg="red")
+    myLable12.configure(bg="#EAEAEA", padx=5, borderwidth=2, relief= "solid", fg="#DC143C")
 
     # relief = "flat", "raised", "sunken", "ridge", "solid", and "groove".
     keyLabels['load-file'] = myLable11
