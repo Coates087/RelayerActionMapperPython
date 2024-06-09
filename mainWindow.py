@@ -317,6 +317,7 @@ def openBase64File():
         # textResult = myFile.read()
         decoded = base64.b64decode(textResult)
         print("printing: " + myFileName)
+        print()
         print(decoded)
         currentDir = os.getcwd()
         finalPath = currentDir + "/temp/" + onlyFile + ".txt"
