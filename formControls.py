@@ -5,14 +5,14 @@ import json
 
 
 class pyControl:
-    def createButton(controlMaster: tk.Misc, controlText="", controlFont="Segoe 10",myWidth:int=18,myHeight:int=2, myCommand:lambda:function=None):
+    def createButton(controlMaster: tk.Misc, controlText="", controlFont="Segoe 10",myWidth:float=18,myHeight:float=2, myCommand:lambda:function=None):
         
         myButton = tk.Button(controlMaster, width=myWidth,height=myHeight, text=controlText, font=(controlFont), compound="right", background="lightblue", 
                              activebackground='#0398fc', command=myCommand)
 
         return myButton
     
-    def createTextbox(controlMaster: tk.Misc, controlText="", controlFont="Segoe 9",myWidth:int=50,myHeight:int=23, readOnly=False):
+    def createTextbox(controlMaster: tk.Misc, controlText="", controlFont="Segoe 9",myWidth:float=50,myHeight:float=23, readOnly=False):
         textboxState = 'normal'
         if readOnly == True:
             textboxState = 'disabled'
@@ -22,7 +22,7 @@ class pyControl:
         #myTexbox.master = controlMaster
         return myTexbox
         
-    def createBetterTextbox(controlMaster: tk.Misc, controlText="", controlFont="Segoe 9",myWidth:int=50,myHeight:int=23, readOnly=False):
+    def createBetterTextbox(controlMaster: tk.Misc, controlText="", controlFont="Segoe 9",myWidth:float=50,myHeight:float=23, readOnly=False):
         textboxState = 'normal'
         if readOnly == True:
             textboxState = 'disabled'
@@ -32,7 +32,7 @@ class pyControl:
         #myTexbox.master = controlMaster
         return myTexbox
     
-    def createMultilineTextbox(controlMaster: tk.Misc, controlText="", controlFont="Segoe 9",myWidth:int=50,myHeight:int=23, readOnly=False):
+    def createMultilineTextbox(controlMaster: tk.Misc, controlText="", controlFont="Segoe 9",myWidth:float=50,myHeight:float=23, readOnly=False):
         textboxState = 'normal'
         if readOnly == True:
             textboxState = 'disabled'

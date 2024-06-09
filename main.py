@@ -124,8 +124,8 @@ def main():
 
 def openSpecialFile():
 
-    textResult = defaultConfigs.json_control_data.default_xbox_config.decode()
-
+    # textResult = defaultConfigs.json_control_data.default_xbox_config.decode()
+    textResult = defaultConfigs.json_control_data.default_xbox_test_config.decode()
     global fileContents 
     fileContents = textResult
     
@@ -135,7 +135,6 @@ def openSpecialFile():
 
         global myGameContrls
         myGameContrls = obj
-        print("success")
         
     except Exception as e:
         # handle it
@@ -200,10 +199,7 @@ def openConfigFile():
                 fileNameOnly:str = os.path.basename(myFileName) ## test this in linux
                 labelText = "File Loaded: " + fileNameOnly
                 lblFile.set_value(labelText)
-            
-
-            print("success")
-
+                pass
 
             
         except Exception as e:

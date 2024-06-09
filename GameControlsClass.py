@@ -32,17 +32,6 @@ class GenericKey2(GenericKeyButtonName2):
     self.KeyCode = KeyCode
     super().__init__(self, ButtonName, XBoxButton) 
 
-# @dataclass
-# class CtrlD:
-#     def __init__(self, Key:GenericKeyButtonName):
-#         super().__init__(self,Key.ButtonName, Key.XBoxButton)
-    
-#     def from_dict(obj: GenericKeyButtonName) -> 'CtrlD':
-#         print(obj.ButtonName)
-#         # _KeyCode = [tk.from_dict(y) for y in obj.get("KeyCode")]
-#         # _ButtonName = str(obj.get("ButtonName"))
-#         # return CtrlD(_KeyCode, _ButtonName)
-
 @dataclass
 class GenericKeyCode:
     KeyCode:list[str]

@@ -1,13 +1,8 @@
-from ast import Constant
-import io, base64
-import time
+
 import tkinter as tk
-from tkinter import ttk
-import ntpath
-import json
+import resource_files.xbox_buttons as xBtn
+import resource_files.general_icons as gIcons
 from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
-import os
-import constantsPython
 from formControls import pyControl, BetterCombobox, BetterTextBox
 from previewFile import previewFileForm
 from resource_files.xbox_buttons import xBtn
@@ -17,9 +12,9 @@ from copy import copy, deepcopy
 #from sys import platform as os_sys
 import platform as os_sys
 
+from updateKeys import LoadpdateKeysForm
 
 
-const = constantsPython.strResourcePath()
 myControl = pyControl
 
 global updateControlForm
@@ -70,6 +65,7 @@ global strScrollActions
 strScrollActions:list[str] = []
 
 
+
 def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrls:GameControls):
     #global myPreview
 
@@ -87,11 +83,12 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
     else: # Linux
         strScrollActions.append('<ButtonPress-4>')
         strScrollActions.append('<ButtonPress-5>')
-        
+    
+    global updateControlForm    
     updateControlForm = tk.Toplevel()
     updateControlForm.geometry("780x680") # size of main window
     updateControlForm.title("Update Controls")
-    updateControlForm.iconbitmap(const.programIcon)
+    updateControlForm.iconphoto(True, tk.PhotoImage(data=gIcons.OtherIcons.AppIconPNG, format="png"))
     #Consolas, 15.75pt
     # pixel2 = tk.PhotoImage(width=1, height=1)
     
@@ -128,17 +125,10 @@ def LoadKeyDialog(eventIndex:str='0', buttonName:str=''):
     try:
         global keyButtons
 
-        temp1 =keyButtons[buttonName]
-
-
-        valID = temp1.winfo_id()
-
-
         global keyDropdowns
-        temp2 = keyDropdowns[buttonName]
 
-        val = temp2.get()
-        print(val)
+        global localGameContrls
+        LoadpdateKeysForm(updateControlForm,buttonName,localGameContrls)
         # do something
         # obj:GameControls = GameControls.Deserialize(jsonFileData)
         # print(obj.CtrlD.ButtonName)
@@ -294,9 +284,6 @@ def LoadForm(myGlobalForm:tk.Misc):
            btnKeys1.configure(state=tk.DISABLED, bg="#ebebeb")
 
         btnKeys1.grid(column=0,row=0, sticky="SW")
-
-        # optionVar = tk.StringVar(name='GamePadButtonName', value='GamePadButtonValue')
-        # optionVar.set(myKeys[ConstButtonName])
         
         aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
         aDropDown.configure(state="readonly")
@@ -305,8 +292,6 @@ def LoadForm(myGlobalForm:tk.Misc):
         for strScroll in strScrollActions:
             myResult = aDropDown.bindtags()
             aDropDown.unbind_class("TCombobox", strScroll)
-            
-            #aDropDown.bind(strScroll,lambda buttonNameKey=anXboxButton: ComboScrollOnOpen(aDropDown, buttonNameKey, buttonNameKey))
             pass
             
 
@@ -349,7 +334,7 @@ def LoadForm(myGlobalForm:tk.Misc):
         keyList:list[str] = myKeys[ConstKeyCode]  
         strSample = ', '.join(keyList)  
         #strSample = "Sample "+ str(r) + "-" + str(0)
-        myLable1:BetterTextBox = myControl.createBetterTextBox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
+        myLable1:BetterTextBox = myControl.createBetterTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
         myLable1.configure(bg="#E5E5E5", padx=5)
         allLabels.append(myLable1)
         keyLabels[anXboxButton] = myLable1
@@ -381,7 +366,7 @@ def LoadForm(myGlobalForm:tk.Misc):
         
         for strScroll in strScrollActions:
             aDropDown.unbind_class("TCombobox", strScroll)
-            aDropDown.bind(strScroll,lambda buttonIndex=r, buttonName=anXboxButton: ComboScrollOnOpen(buttonName=buttonName))
+            #aDropDown.bind(strScroll,lambda buttonIndex=r, buttonName=anXboxButton: ComboScrollOnOpen(buttonName=buttonName))
             
         allDropdowns.append(aDropDown)
         keyDropdowns[anXboxButton] = aDropDown

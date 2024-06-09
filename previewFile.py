@@ -1,7 +1,8 @@
 import tkinter as tk
 import constantsPython
 from formControls import pyControl
-import ctypes
+import resource_files.xbox_buttons as xBtn
+import resource_files.general_icons as gIcons
 
 #global myPreview
 #
