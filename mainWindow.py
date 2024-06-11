@@ -6,7 +6,7 @@ from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
 import os
 from GameControlsClass import GameControls
 import constantsPython
-from formControls import pyControl, BetterTextBox
+from formControls import ToolTip, pyControl, BetterTextBox
 from previewFile import previewFileForm
 from updateControls import LoadpdateControlsForm
 import platform as os_sys
@@ -91,7 +91,7 @@ def StartMain():
 
     # Setting up main window
     root.geometry("660x473") # size of main window
-    root.title("Relayer Action Mapper")
+    root.title("Relayer Action Mapper PE (Python Edition)")
     # myIcon =tk.PhotoImage(data=gIcons.OtherIcons.AppIcon)#, format="bitmap")
     # root.iconbitmap(myIcon) #const.programIcon)
     root.iconphoto(True, tk.PhotoImage(data=gIcons.OtherIcons.AppIconPNG, format="png"))
@@ -136,6 +136,8 @@ def StartMain():
     btnExit = myControl.createButton(controlMaster=root, controlText="Exit", myWidth=14, myCommand=close_win)
     btnExit.configure( bg="#FF8A8A")
     btnExit.place(x=461, y=359) # Setting button position
+
+    ToolTip(btnExit, text="Exit Relayer Action Mapper PE",bg='#ebebed',fg='black',borderColor='#333b54', borderThickness=2)
 
 
     

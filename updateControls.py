@@ -3,7 +3,7 @@ import tkinter as tk
 import resource_files.xbox_buttons as xBtn
 import resource_files.general_icons as gIcons
 from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
-from formControls import pyControl, BetterCombobox, BetterTextBox
+from formControls import ToolTip, pyControl, BetterCombobox, BetterTextBox
 from previewFile import previewFileForm
 from resource_files.xbox_buttons import xBtn
 from GameControlsClass import GameControls, GamePadButton
@@ -69,6 +69,8 @@ global ConstKeyCode
 ConstKeyCode:str = 'KeyCode'
 global ConstKeyField
 ConstKeyField:str = 'KeyField'
+global ConstKeyDesc
+ConstKeyDesc:str = 'KeyDescription'
 
 global strScrollActions
 strScrollActions:list[str] = []
@@ -373,6 +375,7 @@ def LoadForm(myGlobalForm:tk.Misc):
     global keyDropdowns
     global keyButtons
     global keyLabels
+    global ConstKeyDesc
 
 
     global strScrollActions
@@ -439,6 +442,7 @@ def LoadForm(myGlobalForm:tk.Misc):
             #aDropDown.current(1)
             aDropDown.set(myKeys[ConstButtonName])
             aDropDown.grid(column=1,row=0, padx=2, sticky="SW")
+            ToolTip(lbl, text=myKeys[ConstKeyDesc],bg='#ebebed',fg='black',borderColor='#333b54', borderThickness=2)
             
         mySubFrame.grid(row=r,column=0)
 
@@ -485,12 +489,6 @@ def LoadForm(myGlobalForm:tk.Misc):
 
         btnKeys1.grid(column=0,row=0, sticky="SW")
 
-        # optionVar = tk.StringVar(name='GamePadButtonName', value='GamePadButtonValue')
-        # optionVar.set(myButtonOptions[0].GamePadButtonValue)
-        # aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
-        
-        # allDropdowns.append(aDropDown)
-
         
         aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
         aDropDown.configure(state="readonly")
@@ -506,6 +504,7 @@ def LoadForm(myGlobalForm:tk.Misc):
             #aDropDown.current(1)
             aDropDown.set(myKeys[ConstButtonName])
             aDropDown.grid(column=1,row=0, padx=2, sticky="SW")
+            ToolTip(lbl, text=myKeys[ConstKeyDesc],bg='#ebebed',fg='black',borderColor='#333b54', borderThickness=2)
         
         mySubFrame.grid(row=r,column=1)
     
@@ -537,12 +536,14 @@ def getControlSetting(actionId:str):
     global ConstButtonName 
     global ConstKeyCode
     global ConstKeyField
+    global ConstKeyDesc
 
     tempList:list[str] = []
     resultDict: dict[str,any] = {}
 
     resultDict[ConstButtonName] = ''
     resultDict[ConstKeyField] = ''
+    resultDict[ConstKeyDesc] = ''
     resultDict[ConstKeyCode] = tempList
 
     match actionId:
@@ -550,126 +551,151 @@ def getControlSetting(actionId:str):
             resultDict[ConstButtonName] = localGameContrls.Escape.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.Escape.KeyCode
             resultDict[ConstKeyField] = "Escape"
+            resultDict[ConstKeyDesc] = 'Options Menu: revert to default settings\nBattle Screen: Battle menu\nVN Event/Cutscene: Skip event'
             pass
         case "xbox_back":
             resultDict[ConstButtonName] = localGameContrls.V.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.V.KeyCode
             resultDict[ConstKeyField] = "V"
+            resultDict[ConstKeyDesc] = 'Battle Screen: Display Stage information'
             pass
         case "xbox_A":
             resultDict[ConstButtonName] = localGameContrls.Enter.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.Enter.KeyCode
             resultDict[ConstKeyField] = "Enter"
+            resultDict[ConstKeyDesc] = 'Confirm'
             pass
         case "xbox_B":
             resultDict[ConstButtonName] = localGameContrls.Backspace.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.Backspace.KeyCode
             resultDict[ConstKeyField] = "Backspace"
+            resultDict[ConstKeyDesc] = 'Cancel/Back'
             pass
         case "xbox_X":
             resultDict[ConstButtonName] = localGameContrls.Tab.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.Tab.KeyCode
             resultDict[ConstKeyField] = "Tab"
+            resultDict[ConstKeyDesc] = 'Battle Screen:Display Detailed Info\nVN Event/Cutscene: Backlog\nShop Screen: Overview\nStar Cube Screen: Overview'
             pass
         case "xbox_Y":
             resultDict[ConstButtonName] = localGameContrls.Shift.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.Shift.KeyCode
             resultDict[ConstKeyField] = "Shift"
+            resultDict[ConstKeyDesc] = 'Equipment Screen: Remove skill/equipment\nBattle Screen: Display threat area\nVN Event/Cutscene: Auto-Advance\nShop Screen: Confirm Purchase'
             pass
         case "xbox_LB":
             resultDict[ConstButtonName] = localGameContrls.Q.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.Q.KeyCode
             resultDict[ConstKeyField] = "Q"
+            resultDict[ConstKeyDesc] = 'Switch page/unit left'
             pass
         case "xbox_RB":
             resultDict[ConstButtonName] = localGameContrls.E.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.E.KeyCode
             resultDict[ConstKeyField] = "E"
+            resultDict[ConstKeyDesc] = 'Switch page/unit left\nVN Event/Cutscene: Fast Forword'
             pass
         case "xbox_LT":
             resultDict[ConstButtonName] = localGameContrls.WheelUp.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.WheelUp.KeyCode # [ "None" ]
             resultDict[ConstKeyField] = "WheelUp"
+            resultDict[ConstKeyDesc] = 'Zoom Out'
             pass
         case "xbox_RT":
             resultDict[ConstButtonName] = localGameContrls.WheelDown.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.WheelDown.KeyCode # [ "None" ]
             resultDict[ConstKeyField] = "WheelDown"
+            resultDict[ConstKeyDesc] = 'Zoom In'
             pass
         case "xbox_dpad_Up":
             resultDict[ConstButtonName] = localGameContrls.W.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.W.KeyCode
             resultDict[ConstKeyField] = "W"
+            resultDict[ConstKeyDesc] = 'Move cursor up'
             pass
         case "xbox_dpad_Down":
             resultDict[ConstButtonName] = localGameContrls.S.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.S.KeyCode
             resultDict[ConstKeyField] = "S"
+            resultDict[ConstKeyDesc] = 'Move cursor down'
             pass
         case "xbox_dpad_Left":
             resultDict[ConstButtonName] = localGameContrls.A.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.A.KeyCode
             resultDict[ConstKeyField] = "A"
+            resultDict[ConstKeyDesc] = 'Move cursor left'
             pass
         case "xbox_dpad_Right":
             resultDict[ConstButtonName] = localGameContrls.D.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.D.KeyCode
             resultDict[ConstKeyField] = "D"
+            resultDict[ConstKeyDesc] = 'Move cursor right'
         case "xbox_left_stick":
             # resultDict[ConstButtonName] = # localGameContrls.Ctrl..ButtonName
             resultDict[ConstKeyCode] = localGameContrls.Ctrl.KeyCode
             resultDict[ConstKeyField] = "Ctrl"
+            resultDict[ConstKeyDesc] = ''
             pass
         case "xbox_left_stick_Up":
             resultDict[ConstButtonName] = localGameContrls.CtrlW.ButtonName
             resultDict[ConstKeyCode] = ['[Control] + [W]']
             resultDict[ConstKeyField] = "CtrlW"
+            resultDict[ConstKeyDesc] = 'Move cursor up'
             pass
         case "xbox_left_stick_Down":
             resultDict[ConstButtonName] = localGameContrls.CtrlS.ButtonName
             resultDict[ConstKeyCode] = ['[Control] + [S]']
             resultDict[ConstKeyField] = "CtrlS"
+            resultDict[ConstKeyDesc] = 'Move cursor down'
             pass
         case "xbox_left_stick_Left":
             resultDict[ConstButtonName] = localGameContrls.CtrlA.ButtonName
             resultDict[ConstKeyCode] = ['[Control] + [A]']
             resultDict[ConstKeyField] = "CtrlA"
+            resultDict[ConstKeyDesc] = 'Move cursor left'
             pass
         case "xbox_left_stick_Right":
             resultDict[ConstButtonName] = localGameContrls.CtrlD.ButtonName
             resultDict[ConstKeyCode] = ['[Control] + [D]']
             resultDict[ConstKeyField] = "CtrlD"
+            resultDict[ConstKeyDesc] = 'Move cursor right'
             pass
         case "xbox_left_stick_click":
             resultDict[ConstButtonName] = localGameContrls.F.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.F.KeyCode
             resultDict[ConstKeyField] = "F"
+            resultDict[ConstKeyDesc] = 'Battle Screen: View Aggro List'
             pass
         
         case "xbox_right_stick_Up":
             resultDict[ConstButtonName] = localGameContrls.UpArrow.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.UpArrow.KeyCode
             resultDict[ConstKeyField] = "UpArrow"
+            resultDict[ConstKeyDesc] = 'Battle Screen: Move camera up\nStar Cube Screen: freely move cursor up'
             pass
         case "xbox_right_stick_Down":
             resultDict[ConstButtonName] = localGameContrls.DownArrow.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.DownArrow.KeyCode
             resultDict[ConstKeyField] = "DownArrow"
+            resultDict[ConstKeyDesc] = 'Battle Screen: Move camera down\nStar Cube Screen: freely move cursor down'
             pass
         case "xbox_right_stick_Left":
             resultDict[ConstButtonName] = localGameContrls.LeftArrow.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.LeftArrow.KeyCode
             resultDict[ConstKeyField] = "LeftArrow"
+            resultDict[ConstKeyDesc] = 'Battle Screen: Move camera left\nStar Cube Screen: freely move cursor left'
             pass
         case "xbox_right_stick_Right":
             resultDict[ConstButtonName] = localGameContrls.RightArrow.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.RightArrow.KeyCode
             resultDict[ConstKeyField] = "RightArrow"
+            resultDict[ConstKeyDesc] = 'Battle Screen: Move camera right\nStar Cube Screen: freely move cursor right'
             pass
         case "xbox_right_stick_click":
             resultDict[ConstButtonName] = localGameContrls.R.ButtonName
             resultDict[ConstKeyCode] = localGameContrls.R.KeyCode
             resultDict[ConstKeyField] = "R"
+            resultDict[ConstKeyDesc] = 'Battle Screen: Toggle Auto Battle'
             pass
         case _:
             pass

@@ -4,6 +4,44 @@ from tkinter.scrolledtext import ScrolledText
 import json
 
 
+    ## see here for tooltop: https://stackoverflow.com/a/65524559
+class ToolTip:
+    def __init__(self,widget,text=None, bg=None, fg=None, borderColor=None, borderThickness=None):
+        self.borderColor =borderColor
+        self.bg =bg
+        self.fg =fg
+        self.borderThickness =borderThickness
+        # self.borderColor =borderColor
+        # self.borderColor =borderColor
+
+        def on_enter(event):
+            self.tooltip=tk.Toplevel()
+            self.tooltip.overrideredirect(True)
+            self.tooltip.geometry(f'+{event.x_root+15}+{event.y_root+10}')
+
+            self.label=tk.Label(self.tooltip,text=self.text, anchor='nw')
+
+            if bg != None:
+                self.label.configure(bg=bg)
+            if fg != None:
+                self.label.configure(fg=fg)
+            if borderColor != None:
+                self.label.configure(highlightbackground=borderColor)
+            if borderThickness != None:
+                self.label.configure(highlightthickness=borderThickness)
+
+            self.label.pack()
+
+        def on_leave(event):
+            self.tooltip.destroy()
+
+        self.widget=widget
+        self.text=text
+
+        self.widget.bind('<Enter>',on_enter)
+        self.widget.bind('<Leave>',on_leave)
+        pass
+
 class pyControl:
     def createButton(controlMaster: tk.Misc, controlText="", controlFont="Segoe 10",myWidth:float=18,myHeight:float=2, myCommand:lambda:function=None):
         
