@@ -32,6 +32,10 @@ class ToolTip:
 
             self.label.pack()
 
+        def on_move(event):
+            self.tooltip.geometry(f'+{event.x_root+15}+{event.y_root+10}')
+
+
         def on_leave(event):
             self.tooltip.destroy()
 
@@ -39,6 +43,7 @@ class ToolTip:
         self.text=text
 
         self.widget.bind('<Enter>',on_enter)
+        self.widget.bind('<Motion>',on_move)
         self.widget.bind('<Leave>',on_leave)
         pass
 
