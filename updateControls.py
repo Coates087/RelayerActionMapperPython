@@ -1,4 +1,5 @@
 
+import json
 import tkinter as tk
 from resource_files.ps_buttons import psBtn
 import resource_files.xbox_buttons as xBtn
@@ -63,6 +64,9 @@ rdoInputType:tk.StringVar = None
 global jsonLocalGameControls
 jsonLocalGameControls:str = ''
 
+global warnButton
+warnButton:dict[str,tk.Button] = {}
+
 #@Constant
 global ConstButtonName 
 ConstButtonName:str = 'ButtonName'
@@ -72,6 +76,8 @@ global ConstKeyField
 ConstKeyField:str = 'KeyField'
 global ConstKeyDesc
 ConstKeyDesc:str = 'KeyDescription'
+global ConstWarnButton
+ConstWarnButton:str = 'ConstWarnButton'
 
 global strScrollActions
 strScrollActions:list[str] = []
@@ -170,9 +176,21 @@ def SaveChanges():
     global localGameContrls
     global updateControlForm    
     global newControls
-    # newControls = True
+    global rdoInputType
     
     allKeycodes:list[str] =[]
+    strInputMode = rdoInputType.get()
+    isGamepadOnlyMode = True if strInputMode == '1' else False
+
+    aSample = None
+    
+    tempControls:GameControls = getAllDropDownValues(localGameContrls)
+    localGameContrls = tempControls
+
+    if isGamepadOnlyMode == True:
+        tempControls = setControlsForGamepadOnly(localGameContrls)
+        localGameContrls = tempControls
+        pass
 
     strJSON =localGameContrls.Serialize()
     
@@ -190,11 +208,157 @@ def CancelChanges():
     updateControlForm.destroy()
     pass
 
+def getAllDropDownValues(tempControls:GameControls)-> GameControls:
+    
+    global localGameContrls
+
+    global ConstButtonName 
+    global ConstKeyCode
+    global ConstKeyField
+    global ConstKeyDesc
+    global keyDropdowns
+
+    myXboxButtons = getXboxButtons()
+    saveControls:GameControls = tempControls
+    for index, aXboxButton in enumerate(myXboxButtons):
+        myData:str = ''
+        if aXboxButton != 'xbox_left_stick':
+            myData = keyDropdowns[aXboxButton].get_value()
+            pass
+
+        match aXboxButton:
+            case "xbox_start":
+                saveControls.Escape.ButtonName = myData
+                pass
+            case "xbox_back":
+                saveControls.V.ButtonName = myData
+                pass
+            case "xbox_A":
+                saveControls.Enter.ButtonName = myData
+                pass
+            case "xbox_B":
+                saveControls.Backspace.ButtonName = myData
+                pass
+            case "xbox_X":
+                saveControls.Tab.ButtonName = myData
+                pass
+            case "xbox_Y":
+                saveControls.Shift.ButtonName = myData
+                pass
+            case "xbox_LB":
+                saveControls.Q.ButtonName = myData
+                pass
+            case "xbox_RB":
+                saveControls.E.ButtonName = myData
+                pass
+            case "xbox_LT":
+                saveControls.WheelUp.ButtonName = myData
+                pass
+            case "xbox_RT":
+                saveControls.WheelDown.ButtonName = myData
+                pass
+            case "xbox_dpad_Up":
+                saveControls.W.ButtonName = myData
+                pass
+            case "xbox_dpad_Down":
+                saveControls.S.ButtonName = myData
+                pass
+            case "xbox_dpad_Left":
+                saveControls.A.ButtonName = myData
+                pass
+            case "xbox_dpad_Right":
+                saveControls.D.ButtonName = myData
+            # case "xbox_left_stick":
+            #     saveControls.Ctrl.ButtonName = myData
+            #     pass
+            case "xbox_left_stick_click":
+                saveControls.F.ButtonName = myData
+                pass
+            
+            case "xbox_right_stick_Up":
+                saveControls.UpArrow.ButtonName = myData
+                pass
+            case "xbox_right_stick_Down":
+                saveControls.DownArrow.ButtonName = myData
+                pass
+            case "xbox_right_stick_Left":
+                saveControls.LeftArrow.ButtonName = myData
+                pass
+            case "xbox_right_stick_Right":
+                saveControls.RightArrow.ButtonName = myData
+                pass
+            case "xbox_right_stick_click":
+                saveControls.R.ButtonName = myData
+                pass
+            case _:
+                pass
+        pass
+    return saveControls
+
+def setControlsForGamepadOnly(saveControls:GameControls)-> GameControls:
+    global selectedGamePadMode
+    myTempControls: GameControls = None
+    myTempControls = saveControls
+    strTempJSON =myTempControls.Serialize()
+
+    myKeyActions = getKeyActionNameList()
+    rootControls = json.loads(strTempJSON)
+
+    emptyStrList:list[str] = []
+    debugVal = None
+    for index, aKey in enumerate(myKeyActions):
+        newStrList:list[str] = []
+        ## First we need to clear array
+        rootControls[aKey]['KeyCode'] = emptyStrList
+
+        if aKey == 'Ctrl':
+            ## we always want this to be set as 'LeftControl'
+            newStrList.append('LeftControl')
+            pass
+        else:
+            debugVal = rootControls[aKey]['KeyCode']
+            strResult:str = ''
+            strMyButton:str = ''
+            strMyButton = rootControls[aKey]['ButtonName']
+            if selectedGamePadMode == '1': ## '1' is PS mode
+                strResult = getRightKey_PS(strMyButton)
+                pass
+            else:
+                strResult = getRightKey(strMyButton)
+                pass
+            newStrList.append(strResult)
+            pass
+        rootControls[aKey]['KeyCode'] = newStrList
+        pass
+    obj:GameControls = GameControls.Deserialize(json.dumps(rootControls))
+
+    return obj
+
+def ClearGlobals():
+    global allDropdowns
+    global allButtons
+    global allLabels
+    global keyDropdowns
+    global keyButtons
+    global keyLabels
+    global newControls
+
+    allDropdowns = []
+    allButtons = []
+    allLabels = []
+    keyDropdowns = {}
+    keyButtons = {}
+    newControls = False
+    pass
+
 def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrls:GameControls, mySelectedGamePadMode:str = '0'):
     #global myPreview
 
     global selectedGamePadMode
     global strScrollActions
+
+    ## initalizing globals
+    ClearGlobals()
 
     strMac = 'Darwin' # Macs system name is called "Darwin"
 
@@ -256,13 +420,8 @@ def LoadKeyDialog(eventIndex:str='0', buttonName:str='', psButtonName:str = ''):
 
         global localGameContrls
 
-        #updateControlForm.master.printData("")
         LoadpdateKeysForm(updateControlForm,buttonName,localGameContrls, psButtonName)
 
-        temp = localGameContrls.A.KeyCode
-        
-        
-        strJSON =  localGameContrls.Serialize()
         pass
 
     except Exception as e:
@@ -288,15 +447,28 @@ def InputModeChange():
     global keyDropdowns
     global keyButtons
     global keyLabels
+    global warnButton
+    global ConstWarnButton
 
     global rdoInputType
     intInputType = rdoInputType.get()
 
-    if intInputType == '1':
+    if intInputType == '1': # disable the Edit Keys buttons
         for index, aButton in enumerate(allButtons):
             aButton.configure(state=tk.DISABLED, bg="#ebebeb")
             pass
         pass
+        for index, aLabel in enumerate(allLabels):
+            ##aButton.configure(state=tk.DISABLED, bg="#ebebeb")
+            anXboxButton = myActions[index]
+
+            if not anXboxButton == "xbox_left_stick":
+                aLabel.grid_remove()
+                pass
+            pass
+        pass
+    
+        warnButton[ConstWarnButton].grid()
     else:
         for index, aButton in enumerate(allButtons):
             anXboxButton = myActions[index]
@@ -305,7 +477,13 @@ def InputModeChange():
                 aButton.configure(state=tk.NORMAL, bg="lightblue")
             pass
         pass
+        for index, aLabel in enumerate(allLabels):
+            ##aButton.configure(state=tk.DISABLED, bg="#ebebeb")
+            aLabel.grid()
+            pass
+        pass
 
+        warnButton[ConstWarnButton].grid_remove()
     pass
 
 def ComboScrollOnOpen(self, event, buttonNameKey:str=''): ## self, event, 
@@ -319,10 +497,32 @@ def ComboScrollOnOpen(self, event, buttonNameKey:str=''): ## self, event,
     # "break" which will prevent default bindings from being processed
     return "break" 
 
+def get_color(startingColor:str):
+    SoftBlue = '#adbbe6'
+    colors = ['pink', 'orange', 'yellow', 'lightgreen', SoftBlue, 'violet']
+    colorLen = len(colors)
+    colorIndex = -1 
+    if colors.__contains__(startingColor):
+        colorIndex = colors.index(startingColor)
+        pass
+    if colorIndex == (colorLen - 1) or colorIndex == -1:
+        return colors[0]
+    else:
+        return colors[colorIndex + 1]
+
+def startWarningButtonColor(startingColor:str='violet'):
+    global updateControlForm
+    global warnButton
+    global ConstWarnButton
+    
+    result = get_color(startingColor)
+    warnButton[ConstWarnButton].configure(bg=result) # set the colour to the next colour generated
+    warnButton[ConstWarnButton].after(2000, func=lambda newColor=result: startWarningButtonColor(newColor)) # run this function again after 1000ms
+    pass
 
 def LoadForm(myGlobalForm:tk.Misc):
 
-    frame_top =tk.Frame(myGlobalForm, width=2000, height=550)
+    frame_top =tk.Frame(myGlobalForm, width=600, height=550)
     frame_main = tk.Frame(frame_top, width=400, height=500)
     frame_main.grid(sticky='nw', row=2)
     radio_frame = tk.Frame(frame_top)
@@ -347,6 +547,13 @@ def LoadForm(myGlobalForm:tk.Misc):
     rdoKey.grid(row=1, column=1, sticky=tk.NW)
     rdoPad.grid(row=1, column=2, sticky=tk.NW)
 
+    global warnButton
+    global ConstWarnButton
+    warnButton[ConstWarnButton] = myControl.createButton(controlMaster=radio_frame, myWidth=10,myHeight=1, controlText="Information", myCommand=CancelChanges)
+    warnButton[ConstWarnButton].grid(row=1, column=3, sticky=tk.NW)
+
+    warnButton[ConstWarnButton].grid_remove()
+    startWarningButtonColor()
 
     btnSave:tk.Button = myControl.createButton(controlMaster=myGlobalForm, myWidth=14,myHeight=1, controlText="Save", myCommand=SaveChanges)
     btnSave.place(x=520,y=480)
@@ -529,13 +736,11 @@ def LoadForm(myGlobalForm:tk.Misc):
         
         for strScroll in strScrollActions:
             aDropDown.unbind_class("TCombobox", strScroll)
-            #aDropDown.bind(strScroll,lambda buttonIndex=r, buttonName=anXboxButton: ComboScrollOnOpen(buttonName=buttonName))
             
         allDropdowns.append(aDropDown)
         keyDropdowns[anXboxButton] = aDropDown
 
         if not anXboxButton == "xbox_left_stick":
-            #aDropDown.current(1)
             aDropDown.set(myKeys[ConstButtonName])
             aDropDown.grid(column=1,row=0, padx=2, sticky="SW")
             ToolTip(lbl, text=myKeys[ConstKeyDesc],bg='#ebebed',fg='black',borderColor='#333b54', borderThickness=2)
@@ -951,3 +1156,123 @@ def getXboxSticks():
     xboxList.append("xbox_right_stick_click")
 
     return xboxList
+
+def getKeyActionNameList():
+    key_actions:list[str] = []
+
+    key_actions.append("Enter")
+    key_actions.append("Backspace")
+    key_actions.append("Shift")
+    key_actions.append("Tab")
+    key_actions.append("W")
+    key_actions.append("S")
+    key_actions.append("A")
+    key_actions.append("D")
+    key_actions.append("Q")
+    key_actions.append("E")
+    key_actions.append("F")
+    key_actions.append("R")
+    key_actions.append("V")
+    key_actions.append("Escape")
+    key_actions.append("UpArrow")
+    key_actions.append("DownArrow")
+    key_actions.append("LeftArrow")
+    key_actions.append("RightArrow")
+    key_actions.append("WheelUp")
+    key_actions.append("WheelDown")
+    key_actions.append("Ctrl")
+
+    return key_actions
+
+def getRightKey(button_name: str) -> str:
+    key_name:str = ""
+
+    match button_name:
+        case "joystick_button_0":
+            key_name = "Return"
+        case "joystick_button_1":
+            key_name = "Backspace"
+        case "joystick_button_3":
+            key_name = "LeftShift"
+        case "joystick_button_2":
+            key_name = "Tab"
+        case "Axis_7_P":
+            key_name = "W"
+        case "Axis_7_N":
+            key_name = "S"
+        case "Axis_6_N":
+            key_name = "A"
+        case "Axis_6_P":
+            key_name = "D"
+        case "joystick_button_4":
+            key_name = "Q"
+        case "joystick_button_5":
+            key_name = "E"
+        case "joystick_button_8":
+            key_name = "F"
+        case "joystick_button_9":
+            key_name = "R"
+        case "joystick_button_6":
+            key_name = "V"
+        case "joystick_button_7":
+            key_name = "Escape"
+        case "Axis_5_N":
+            key_name = "UpArrow"
+        case "Axis_5_P":
+            key_name = "DownArrow"
+        case "Axis_4_N":
+            key_name = "LeftArrow"
+        case "Axis_4_P":
+            key_name = "RightArrow"
+        case "Axis_9_P":
+            key_name = "None"
+        case "Axis_10_P":
+            key_name = "None"
+
+    return key_name
+
+def getRightKey_PS(button_name: str) -> str:
+    key_name = ""
+
+    match button_name:
+        case "joystick_button_1":
+            key_name = "Return"
+        case "joystick_button_2":
+            key_name = "Backspace"
+        case "joystick_button_3":
+            key_name = "LeftShift"
+        case "joystick_button_0":
+            key_name = "Tab"
+        case "Axis_8_P":
+            key_name = "W"
+        case "Axis_8_N":
+            key_name = "S"
+        case "Axis_7_N":
+            key_name = "A"
+        case "Axis_7_P":
+            key_name = "D"
+        case "joystick_button_4":
+            key_name = "Q"
+        case "joystick_button_5":
+            key_name = "E"
+        case "joystick_button_10":
+            key_name = "F"
+        case "joystick_button_11":
+            key_name = "R"
+        case "joystick_button_8":
+            key_name = "V"
+        case "joystick_button_9":
+            key_name = "Escape"
+        case "Axis_6_N":
+            key_name = "UpArrow"
+        case "Axis_6_P":
+            key_name = "DownArrow"
+        case "Axis_3_N":
+            key_name = "LeftArrow"
+        case "Axis_3_P":
+            key_name = "RightArrow"
+        case "joystick_button_6" | "joystick_button_7":
+            key_name = "None"
+
+    return key_name
+

@@ -250,6 +250,36 @@ def updateKeyCount():
     lblKey.set_value("Keys: " + str(numOfKeys))
     pass
 
+def ClearGlobals():
+    # dictionaries
+    global keySubFrames
+    global keyDropdowns
+    global keyButtons
+    global keyLabels
+
+    global myKeyOptions
+
+    global strScrollActions
+    global frame_main
+    global canvas
+    
+    global ConstButtonName 
+    global ConstKeyCode
+    global ConstKeyField
+
+    global indexKey
+    global strKey
+
+    ## initalizing globals
+    keySubFrames = {}
+    keyDropdowns = {}
+    keyButtons = {}
+    keyLabels = {}
+    frame_main = {}
+    canvas = None
+    indexKey = 0
+    pass
+
 def LoadFormContent(myGlobalForm:tk.Misc, strActionName:str, altButton:str=''):
     
     frame_top =tk.Frame(myGlobalForm, width=900, height=100)
@@ -282,13 +312,7 @@ def LoadFormContent(myGlobalForm:tk.Misc, strActionName:str, altButton:str=''):
     global strKey
 
     ## initalizing globals
-    keySubFrames = {}
-    keyDropdowns = {}
-    keyButtons = {}
-    keyLabels = {}
-    frame_main = {}
-    canvas = None
-    indexKey = 0
+    ClearGlobals()
 
     frame_parent = tk.Frame(frame_top)
     frame_parent.grid(sticky='news')
@@ -325,8 +349,6 @@ def LoadFormContent(myGlobalForm:tk.Misc, strActionName:str, altButton:str=''):
         myData = myButtons[strActionName]
         pass
     
-    # lblKey = tk.Label(frame_top, text="Keys", padx=2)
-    # lblKey.grid(column=0,row=0, rowspan=2)
     myImage2 = tk.PhotoImage(data=myData,format="png",width=70,height=70)
     img = myImage2
     
