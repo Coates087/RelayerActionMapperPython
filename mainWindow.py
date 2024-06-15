@@ -33,6 +33,10 @@ saveWarn = "Click on the <<Save File>> button to save your changes."
 global unsaved
 unsaved:bool = False
 
+
+global rdoGamePadType
+rdoGamePadType:tk.StringVar = None
+
 class defaultConfigOptions:
     defaultConfigOp:str = 'defaultConfig'
     
@@ -95,6 +99,15 @@ def StartMain():
     # myIcon =tk.PhotoImage(data=gIcons.OtherIcons.AppIcon)#, format="bitmap")
     # root.iconbitmap(myIcon) #const.programIcon)
     root.iconphoto(True, tk.PhotoImage(data=gIcons.OtherIcons.AppIconPNG, format="png"))
+
+    global rdoGamePadType
+    rdoGamePadType = tk.StringVar()
+    rdoGamePadType.set(0)
+
+    rdoXbox = tk.Radiobutton(root, text="Xbox Mode", variable=rdoGamePadType, value=0, command=GamePadModeChange)
+    rdoPS = tk.Radiobutton(root, text="PS Mode", variable=rdoGamePadType, value=1, command=GamePadModeChange)
+    rdoXbox.place(x=10, y=15) # Setting button position
+    rdoPS.place(x=113, y=15) # Setting button position
     
     global keyLabels
 
@@ -166,10 +179,32 @@ def StartMain():
     root.mainloop()
     return (True)
 
-def openSpecialFile():
 
+def GamePadModeChange():
+    global rdoGamePadType
+    selecteMode = rdoGamePadType.get()
+
+    if selecteMode == '0':
+        print('Xbox Mode')
+    else:
+        print('PlayStation Mode')
+
+    pass
+
+def openSpecialFile():
+    textResult:str = ''
+    
+    global rdoGamePadType
+    selecteMode = rdoGamePadType.get()
+
+    if selecteMode == '1':
+        textResult = defaultConfigs.json_control_data.default_PS_config.decode()
+        pass
+    else:
+        textResult = defaultConfigs.json_control_data.default_xbox_config.decode()
+        pass
     # textResult = defaultConfigs.json_control_data.default_xbox_config.decode()
-    textResult = defaultConfigs.json_control_data.default_xbox_test_config.decode()
+    # textResult = defaultConfigs.json_control_data.default_xbox_test_config.decode()
     global fileContents 
     fileContents = textResult
     
@@ -298,10 +333,22 @@ def previewFile():
 
 def updateControls():
     global myGameContrls
+    
+    global rdoGamePadType
+
+    selectedGamePadMode = rdoGamePadType.get()
+    strSpecialMessage = 'No config file has been loaded. Do you wish to edit the controls from a pre-made configuration?'
     if fileContents == '':
-        openSpecialFile()
         
-    LoadpdateControlsForm(root, fileContents, myGameContrls)
+        from tkinter import messagebox 
+        messageResult = messagebox.askyesno("Information", strSpecialMessage)
+        if messageResult == True:
+            openSpecialFile()
+            pass
+        else:
+            return
+        
+    LoadpdateControlsForm(root, fileContents, myGameContrls, selectedGamePadMode)
 
 def openBase64File():
     

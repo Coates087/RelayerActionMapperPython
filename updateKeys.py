@@ -1,4 +1,5 @@
 import tkinter as tk
+from resource_files.ps_buttons import psBtn
 import resource_files.xbox_buttons as xBtn
 import resource_files.general_icons as gIcons
 from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
@@ -79,7 +80,7 @@ myControl = pyControl
 global myParent
 myParent: tk.Misc
 
-def LoadpdateKeysForm(controlMaster: tk.Misc, strActionName:str, myTempGameContrls:GameControls):
+def LoadpdateKeysForm(controlMaster: tk.Misc, strActionName:str, myTempGameContrls:GameControls, altButton:str=''):
     global keyControlForm
 
     global strScrollActions
@@ -121,7 +122,7 @@ def LoadpdateKeysForm(controlMaster: tk.Misc, strActionName:str, myTempGameContr
     global myKeyOptions
     myKeyOptions = getKeyList()
 
-    LoadFormContent(keyControlForm,strActionName)
+    LoadFormContent(keyControlForm,strActionName, altButton)
     if not keyControlForm == None:
         keyControlForm.grab_set() # forces focus on form
         keyControlForm.transient(controlMaster) # set to be on top of the main window
@@ -249,7 +250,7 @@ def updateKeyCount():
     lblKey.set_value("Keys: " + str(numOfKeys))
     pass
 
-def LoadFormContent(myGlobalForm:tk.Misc, strActionName:str):
+def LoadFormContent(myGlobalForm:tk.Misc, strActionName:str, altButton:str=''):
     
     frame_top =tk.Frame(myGlobalForm, width=900, height=100)
     frame_top.place(x=1,y=1)
@@ -306,6 +307,9 @@ def LoadFormContent(myGlobalForm:tk.Misc, strActionName:str):
     btnCancel.place(x=400,y=300)
 
     myButtons = vars(xBtn)
+
+    myPSButtons = vars(psBtn)
+    
     myXboxSticks = getXboxSticks()
 
     myKeyField = getControlSetting(strActionName)
@@ -313,7 +317,13 @@ def LoadFormContent(myGlobalForm:tk.Misc, strActionName:str):
     myKeyList = myKeyField[ConstKeyCode]
     aLength = myKeyList.__len__()
 
-    myData:bytes =myButtons[strActionName]
+    myData:bytes = None 
+    if altButton != '':
+        myData = myPSButtons[altButton]
+        pass
+    else:
+        myData = myButtons[strActionName]
+        pass
     
     # lblKey = tk.Label(frame_top, text="Keys", padx=2)
     # lblKey.grid(column=0,row=0, rowspan=2)

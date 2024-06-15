@@ -8,7 +8,7 @@ from GameControlsClass import GameControls
 import constantsPython
 from formControls import pyControl, BetterTextBox
 from previewFile import previewFileForm
-from updateControls import LoadpdateControlsForm
+#from updateControls import LoadpdateControlsForm
 #import updateControls.LoadpdateControlsForm
 
 #import updateControls
@@ -22,3 +22,6 @@ const = constantsPython.strResourcePath()
 import mainWindow
 
 mainWindow.StartMain()
+
+
+

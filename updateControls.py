@@ -1,5 +1,6 @@
 
 import tkinter as tk
+from resource_files.ps_buttons import psBtn
 import resource_files.xbox_buttons as xBtn
 import resource_files.general_icons as gIcons
 from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
@@ -77,6 +78,10 @@ strScrollActions:list[str] = []
 
 global newControls
 newControls:bool = False
+
+
+global selectedGamePadMode
+selectedGamePadMode:str = ''
 
 class childWin:    
     def storeKeyResults(myKey:str, myData:list[str]):
@@ -185,9 +190,10 @@ def CancelChanges():
     updateControlForm.destroy()
     pass
 
-def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrls:GameControls):
+def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrls:GameControls, mySelectedGamePadMode:str = '0'):
     #global myPreview
 
+    global selectedGamePadMode
     global strScrollActions
 
     strMac = 'Darwin' # Macs system name is called "Darwin"
@@ -205,13 +211,16 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
     
     global updateControlForm    
     updateControlForm = tk.Toplevel()
-    updateControlForm.geometry("780x680") # size of main window
+    updateControlForm.geometry("780x600") # size of main window
     updateControlForm.title("Update Controls")
     updateControlForm.iconphoto(True, tk.PhotoImage(data=gIcons.OtherIcons.AppIconPNG, format="png"))
     #Consolas, 15.75pt
     # pixel2 = tk.PhotoImage(width=1, height=1)
     
     #jsonData ##"Relayer \nAdvanced"
+
+    # if set to '1' then use PS buttons icons, else default to Xbox icons
+    selectedGamePadMode = mySelectedGamePadMode
 
     global jsonFileData
     jsonFileData = jsonData
@@ -238,11 +247,8 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
     pass
    
 
-def LoadKeyDialog(eventIndex:str='0', buttonName:str=''):
-    strJson:str = '{"Ctrl+D":{"ButtonName":"Axis_1_P"}}' #"\"Ctrl+D\": {\"ButtonName\": \"Axis_1_P\"}"
-    strJson = '{"CtrlD":{"ButtonName":"Axis_1_P"}}'
-    widgetIndex = buttonName
-    #print(rdoInputType.get())
+def LoadKeyDialog(eventIndex:str='0', buttonName:str='', psButtonName:str = ''):
+   
     try:
         global keyButtons
 
@@ -251,7 +257,7 @@ def LoadKeyDialog(eventIndex:str='0', buttonName:str=''):
         global localGameContrls
 
         #updateControlForm.master.printData("")
-        LoadpdateKeysForm(updateControlForm,buttonName,localGameContrls)
+        LoadpdateKeysForm(updateControlForm,buttonName,localGameContrls, psButtonName)
 
         temp = localGameContrls.A.KeyCode
         
@@ -351,6 +357,8 @@ def LoadForm(myGlobalForm:tk.Misc):
 
     myButtons = vars(xBtn)
 
+    myPSButtons = vars(psBtn)
+
     myKeys = myButtons.keys()
     #print(myKeys)
     myXboxButtons = getXboxButtons()
@@ -358,8 +366,18 @@ def LoadForm(myGlobalForm:tk.Misc):
 
     myXboxSticks = getXboxSticks()
     aLength2 = myXboxSticks.__len__()
+
+    global selectedGamePadMode
     
-    myButtonOptions = getXboxOptions()
+    myButtonOptions: list[GamePadButton] = []
+    
+    if selectedGamePadMode == '1':
+        myButtonOptions = getPSOptions()
+        pass
+    else:
+        myButtonOptions = getXboxOptions()
+        pass
+   
 
     myButtonNames:list[str] =[]
     myButtonValues:list[str] =[]
@@ -377,16 +395,23 @@ def LoadForm(myGlobalForm:tk.Misc):
     global keyLabels
     global ConstKeyDesc
 
-
     global strScrollActions
 
     # Xbox Buttons
     for r in range(aLength):
         anXboxButton:str = myXboxButtons[r]
-
+        strPSbutton:str = ''
         mySubFrame = tk.Frame(second_frame, width=400)
 
-        myData:bytes =myButtons[anXboxButton]
+        myData:bytes = None
+        if selectedGamePadMode == '1':
+            strPSbutton = getPSButtons(anXboxButton)
+            myData = myPSButtons[strPSbutton]
+            pass
+        else:
+            myData = myButtons[anXboxButton]
+            pass
+
         
         myImage2 = tk.PhotoImage(data=myData,format="png",width=70,height=70)
         lbl = tk.Label(mySubFrame, image=myImage2, bg="#E5E5E5")
@@ -407,7 +432,7 @@ def LoadForm(myGlobalForm:tk.Misc):
         myLable1.grid(column=1,row=1, rowspan=1)
         
         #button_var = tk.StringVar(value=aButtonId)
-        btnKeys1:tk.Button = myControl.createButton(controlMaster=specialFrame, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=lambda buttonIndex=r, buttonName=anXboxButton: LoadKeyDialog(buttonIndex, buttonName))
+        btnKeys1:tk.Button = myControl.createButton(controlMaster=specialFrame, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=lambda buttonIndex=r, buttonName=anXboxButton, psButtonName=strPSbutton: LoadKeyDialog(buttonIndex, buttonName, psButtonName))
        
         allButtons.append(btnKeys1)
         keyButtons[anXboxButton] = btnKeys1
@@ -449,10 +474,19 @@ def LoadForm(myGlobalForm:tk.Misc):
     # Xbox Sticks
     for r in range(aLength2):
         anXboxButton:str = myXboxSticks[r]
+        strPSbutton:str = ''
 
         mySubFrame = tk.Frame(second_frame, width=400)
 
-        myData:bytes =myButtons[anXboxButton]
+        myData:bytes = None
+        if selectedGamePadMode == '1':
+            strPSbutton = getPSButtons(anXboxButton)
+            myData = myPSButtons[strPSbutton]
+            pass
+        else:
+            myData = myButtons[anXboxButton]
+            pass
+
         myImage2 = tk.PhotoImage(data=myData,format="png",width=107,height=70)
         myImage2  = myImage2.zoom(x=7)
 
@@ -476,7 +510,7 @@ def LoadForm(myGlobalForm:tk.Misc):
         myLable1.grid(column=1,row=1, rowspan=1)
         
         buttonIndexFinal = (r + aLength)
-        btnKeys1:tk.Button = myControl.createButton(controlMaster=specialFrame, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=lambda buttonIndex=buttonIndexFinal, buttonName=anXboxButton: LoadKeyDialog(buttonIndex, buttonName))
+        btnKeys1:tk.Button = myControl.createButton(controlMaster=specialFrame, myWidth=10,myHeight=1, controlText="Edit Keys", myCommand=lambda buttonIndex=buttonIndexFinal, buttonName=anXboxButton, psButtonName=strPSbutton: LoadKeyDialog(buttonIndex, buttonName, psButtonName))
        
         allButtons.append(btnKeys1)
         keyButtons[anXboxButton] = btnKeys1
@@ -701,6 +735,93 @@ def getControlSetting(actionId:str):
             pass
     return resultDict
 
+
+def getPSButtons(strXboxButton:str):
+    strPSbutton: str = ''
+
+    match strXboxButton:
+        case "xbox_start":
+            strPSbutton = "ps_options"
+            pass
+        case "xbox_back":
+            strPSbutton = "ps_share"
+            pass
+        case "xbox_A":
+            strPSbutton = "ps_cross"
+            pass
+        case "xbox_B":
+            strPSbutton = "ps_circle"
+            pass
+        case "xbox_X":
+            strPSbutton = "ps_square"
+            pass
+        case "xbox_Y":
+            strPSbutton = "ps_triangle"
+            pass
+        case "xbox_LB":
+            strPSbutton = "ps_L1"
+            pass
+        case "xbox_RB":
+            strPSbutton = "ps_R1"
+            pass
+        case "xbox_LT":
+            strPSbutton = "ps_L2"
+            pass
+        case "xbox_RT":
+            strPSbutton = "ps_R2"
+            pass
+        case "xbox_dpad_Up":
+            strPSbutton = "ps_dpad_Up"
+            pass
+        case "xbox_dpad_Down":
+            strPSbutton = "ps_dpad_Down"
+            pass
+        case "xbox_dpad_Left":
+            strPSbutton = "ps_dpad_Left"
+            pass
+        case "xbox_dpad_Right":
+            strPSbutton = "ps_dpad_Right"
+            pass
+        
+        case "xbox_left_stick_Up":
+            strPSbutton = "ps_left_stick_Up"
+            pass
+        case "xbox_left_stick_Down":
+            strPSbutton = "ps_left_stick_Down"
+            pass
+        case "xbox_left_stick_Left":
+            strPSbutton = "ps_left_stick_Left"
+            pass
+        case "xbox_left_stick_Right":
+            strPSbutton = "ps_left_stick_Right"
+            pass
+        case "xbox_left_stick":
+            strPSbutton = "ps_left_stick"
+            pass
+        case "xbox_left_stick_click":
+            strPSbutton = "ps_L3"
+            pass
+
+        case "xbox_right_stick_Up":
+            strPSbutton = "ps_right_stick_Up"
+            pass
+        case "xbox_right_stick_Down":
+            strPSbutton = "ps_right_stick_Down"
+            pass
+        case "xbox_right_stick_Left":
+            strPSbutton = "ps_right_stick_Left"
+            pass
+        case "xbox_right_stick_Right":
+            strPSbutton = "ps_right_stick_Right"
+            pass
+        case "xbox_right_stick_click":
+            strPSbutton = "ps_R3"
+            pass
+        case _:
+            pass
+    return strPSbutton
+
+
 def getXboxOptions():
     buttonList: list[GamePadButton] = []
     ## Face buttons
@@ -737,9 +858,51 @@ def getXboxOptions():
     buttonList.append(GamePadButton(GamePadButtonName="Xbox D Pad Left", GamePadButtonValue="Axis_6_N"))
     buttonList.append(GamePadButton(GamePadButtonName="Xbox D Pad Right", GamePadButtonValue="Axis_6_P"))
 
-    ## Analog Buttons
+    ## Other Buttons
     buttonList.append(GamePadButton(GamePadButtonName="Xbox Back/View", GamePadButtonValue="joystick_button_6"))
     buttonList.append(GamePadButton(GamePadButtonName="Xbox Start/Menu", GamePadButtonValue="joystick_button_7"))
+
+    return buttonList
+
+def getPSOptions():
+    buttonList: list[GamePadButton] = []
+    ## Face buttons
+    buttonList.append(GamePadButton(GamePadButtonName="PS Cross", GamePadButtonValue="joystick_button_1"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS Circle", GamePadButtonValue="joystick_button_2"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS Square", GamePadButtonValue="joystick_button_0"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS Triangle", GamePadButtonValue="joystick_button_3"))
+
+    ## Shoulder buttons
+    buttonList.append(GamePadButton(GamePadButtonName="PS L1", GamePadButtonValue="joystick_button_4"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS R1", GamePadButtonValue="joystick_button_5"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS L2", GamePadButtonValue="joystick_button_6"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS R2", GamePadButtonValue="joystick_button_7"))
+
+    ## Analog Buttons
+    buttonList.append(GamePadButton(GamePadButtonName="PS L3 (Left Stick Btn)", GamePadButtonValue="joystick_button_10"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS R3 (Right Stick Btn)", GamePadButtonValue="joystick_button_11"))
+
+    ## Left Stick
+    buttonList.append(GamePadButton(GamePadButtonName="PS LStick Up", GamePadButtonValue="Axis_2_N"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS LStick Down", GamePadButtonValue="Axis_2_P"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS LStick Left", GamePadButtonValue="Axis_1_N"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS LStick Right", GamePadButtonValue="Axis_1_P"))
+
+    ## Right Stick
+    buttonList.append(GamePadButton(GamePadButtonName="PS RStick Up", GamePadButtonValue="Axis_6_N"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS RStick Down", GamePadButtonValue="Axis_6_P"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS RStick Left", GamePadButtonValue="Axis_3_N"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS RStick Right", GamePadButtonValue="Axis_3_P"))
+    
+    ## D Pad
+    buttonList.append(GamePadButton(GamePadButtonName="PS D Pad Up", GamePadButtonValue="Axis_8_P"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS D Pad Down", GamePadButtonValue="Axis_8_N"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS D Pad Left", GamePadButtonValue="Axis_7_N"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS D Pad Right", GamePadButtonValue="Axis_7_P"))
+
+    ## Other Buttons
+    buttonList.append(GamePadButton(GamePadButtonName="PS Select/Share", GamePadButtonValue="joystick_button_8"))
+    buttonList.append(GamePadButton(GamePadButtonName="PS Start/Options", GamePadButtonValue="joystick_button_9"))
 
     return buttonList
 
