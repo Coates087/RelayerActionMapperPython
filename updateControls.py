@@ -4,14 +4,11 @@ import tkinter as tk
 from resource_files.ps_buttons import psBtn
 import resource_files.xbox_buttons as xBtn
 import resource_files.general_icons as gIcons
-from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
 from formControls import ToolTip, pyControl, BetterCombobox, BetterTextBox
-from previewFile import previewFileForm
+from warningWindow import warningForm
 from resource_files.xbox_buttons import xBtn
 from GameControlsClass import GameControls, GamePadButton
-from tkinter.tix import ScrolledWindow
 from copy import copy, deepcopy
-#from sys import platform as os_sys
 import platform as os_sys
 
 from updateKeys import LoadpdateKeysForm
@@ -499,7 +496,7 @@ def ComboScrollOnOpen(self, event, buttonNameKey:str=''): ## self, event,
 
 def get_color(startingColor:str):
     SoftBlue = '#adbbe6'
-    colors = ['pink', 'orange', 'yellow', 'lightgreen', SoftBlue, 'violet']
+    colors = ['pink', 'yellow', 'lightgreen', SoftBlue, 'violet']
     colorLen = len(colors)
     colorIndex = -1 
     if colors.__contains__(startingColor):
@@ -518,6 +515,11 @@ def startWarningButtonColor(startingColor:str='violet'):
     result = get_color(startingColor)
     warnButton[ConstWarnButton].configure(bg=result) # set the colour to the next colour generated
     warnButton[ConstWarnButton].after(2000, func=lambda newColor=result: startWarningButtonColor(newColor)) # run this function again after 1000ms
+    pass
+
+def openWarnWindow():
+    global updateControlForm
+    warningForm(updateControlForm)
     pass
 
 def LoadForm(myGlobalForm:tk.Misc):
@@ -549,7 +551,7 @@ def LoadForm(myGlobalForm:tk.Misc):
 
     global warnButton
     global ConstWarnButton
-    warnButton[ConstWarnButton] = myControl.createButton(controlMaster=radio_frame, myWidth=10,myHeight=1, controlText="Information", myCommand=CancelChanges)
+    warnButton[ConstWarnButton] = myControl.createButton(controlMaster=radio_frame, myWidth=10,myHeight=1, controlText="Information", myCommand=openWarnWindow)
     warnButton[ConstWarnButton].grid(row=1, column=3, sticky=tk.NW)
 
     warnButton[ConstWarnButton].grid_remove()

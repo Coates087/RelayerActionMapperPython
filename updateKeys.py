@@ -4,7 +4,6 @@ import resource_files.xbox_buttons as xBtn
 import resource_files.general_icons as gIcons
 from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
 from formControls import pyControl, BetterCombobox, BetterTextBox
-from previewFile import previewFileForm
 from resource_files.xbox_buttons import xBtn
 from GameControlsClass import GameControls, GamePadButton, KeyboardClass
 from tkinter.tix import ScrolledWindow
