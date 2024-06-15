@@ -16,10 +16,17 @@ bigTextPreview:dict[str,ScrolledText] = {}
 global ConstTextPreview
 ConstTextPreview:str='ConstTextPreview'
 
+global myPreview
+myPreview: tk.Toplevel = None
+global parentForm
+parentForm: tk.Misc = None
 
 def previewFileForm(controlMaster: tk.Misc, jsonData:str):
     global bigTextPreview
-    global ConstTextPreview
+    global ConstTextPreview    
+    global myPreview
+    global parentForm
+    parentForm = controlMaster
 
     myPreview = tk.Toplevel()
 
@@ -37,9 +44,17 @@ def previewFileForm(controlMaster: tk.Misc, jsonData:str):
     btPreview.place(x=5, y=49) # Setting position
 
     btnPreviewExit = myControl.createButton(controlMaster=myPreview, controlText="Close")
-    #btnPreviewExit.configure(command=myPreview.destroy)
-    btnPreviewExit.configure(command=myPreview.destroy)
-    # btnPreviewExit.pack()
+    
+    btnPreviewExit.configure(command=closeThis)
+    myPreview.protocol('WM_DELETE_WINDOW', closeThis)  # overrides control box's X button
+
     btnPreviewExit.place(x=461, y=529) # Setting button position
     
     myPreview.grab_set() # forces focus on form
+
+def closeThis():
+    global myPreview
+    global parentForm
+    parentForm.grab_set()
+    myPreview.destroy()
+    pass

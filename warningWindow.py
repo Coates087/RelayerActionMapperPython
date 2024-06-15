@@ -16,11 +16,21 @@ bigTextPreview:dict[str,ScrolledText] = {}
 global ConstTextPreview
 ConstTextPreview:str='ConstTextPreview'
 
+global parentForm
+parentForm:tk.Toplevel = None
+
+global myWarn
+myWarn:tk.Toplevel = None
 
 def warningForm(controlMaster: tk.Misc):
 
     strNexusLink:str='https://www.nexusmods.com/relayeradvanced/mods/1'
     strGameBananaLink:str='https://gamebanana.com/mods/490768'
+
+    global myWarn
+    
+    global parentForm
+    parentForm = controlMaster
     myWarn = tk.Toplevel()
     strNewLine:str = '\n\n'
 
@@ -48,8 +58,17 @@ def warningForm(controlMaster: tk.Misc):
 
     btnPreviewExit = myControl.createButton(controlMaster=myWarn, controlText="Close")
     #btnPreviewExit.configure(command=myPreview.destroy)
-    btnPreviewExit.configure(command=myWarn.destroy)
+    btnPreviewExit.configure(command=closeThis)
     # btnPreviewExit.pack()
     btnPreviewExit.place(x=461, y=329) # Setting button position
+
+    myWarn.protocol('WM_DELETE_WINDOW', closeThis)  # overrides control box's X button
     
     myWarn.grab_set() # forces focus on form
+
+def closeThis():
+    global myWarn
+    global parentForm
+    parentForm.grab_set()
+    myWarn.destroy()
+    pass

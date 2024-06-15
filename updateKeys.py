@@ -128,6 +128,8 @@ def LoadpdateKeysForm(controlMaster: tk.Misc, strActionName:str, myTempGameContr
         # child_window.transient(root) # set to be on top of the main window
         # child_window.grab_set() # hijack all commands from the master (clicks on the main window are ignored)
         # root.wait_window(child_window) # pause anything on the main window until this one closes
+        
+        keyControlForm.protocol('WM_DELETE_WINDOW', CancelChanges)  # overrides control box's X button
         pass
 
 
@@ -188,7 +190,6 @@ def RemoveKey(index):
 
 
 def SaveChanges():
-    # print("SaveChanges")
     global myParent
     global keyControlForm
     
@@ -199,16 +200,19 @@ def SaveChanges():
     allKeycodes:list[str] =[]
 
     allKeycodes = getAllDropdows()
-    ##.printData("Data")
+    
+    global myParent
+    myParent.grab_set()
     
     updateControls.childWin.storeKeyResults(strAction,allKeycodes)
     keyControlForm.destroy()
     pass
 
 def CancelChanges():
-    print("CancelChanges")
     global keyControlForm
 
+    global myParent
+    myParent.grab_set()
     keyControlForm.destroy()
     pass
 
@@ -412,6 +416,7 @@ def LoadFormContent(myGlobalForm:tk.Misc, strActionName:str, altButton:str=''):
     # Set the canvas scrolling region
     canvas.config(scrollregion=canvas.bbox("all"))
     pass
+
 
 def createElements(myIndex:int = 0, strKeyCode:str = 'None', intRow:int = 0):
     

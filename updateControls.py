@@ -169,7 +169,6 @@ class childWin:
 
 
 def SaveChanges():
-    # print("SaveChanges")
     global localGameContrls
     global updateControlForm    
     global newControls
@@ -199,7 +198,6 @@ def SaveChanges():
     pass
 
 def CancelChanges():
-    print("CancelChanges")
     global updateControlForm
 
     updateControlForm.destroy()
@@ -394,14 +392,15 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
     
     try:
         testStr = GameControls.Serialize(myGameContrls) #myGameContrls.Serialize()
-        tempContrls =GameControls.Deserialize(testStr)
+        
     except Exception as e:
         # handle it
         print(e.args[0])
-        print("Add Dummy JSON")
 
     if not updateControlForm == None:
         updateControlForm.grab_set() # forces focus on form
+        
+        updateControlForm.protocol('WM_DELETE_WINDOW', CancelChanges)  # overrides control box's X button
         pass
 
     LoadForm(updateControlForm)

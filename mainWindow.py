@@ -36,6 +36,8 @@ unsaved:bool = False
 
 global rdoGamePadType
 rdoGamePadType:tk.StringVar = None
+global chkOverrideSave
+chkOverrideSave:tk.StringVar = None
 
 class defaultConfigOptions:
     defaultConfigOp:str = 'defaultConfig'
@@ -108,6 +110,12 @@ def StartMain():
     rdoPS = tk.Radiobutton(root, text="PS Mode", variable=rdoGamePadType, value=1, command=GamePadModeChange)
     rdoXbox.place(x=10, y=15) # Setting button position
     rdoPS.place(x=113, y=15) # Setting button position
+    
+    global chkOverrideSave
+    chkOverrideSave = tk.StringVar()
+    chkOverrideSave.set(0)
+    chkOver= tk.Checkbutton(root, text='Always Override File',variable=chkOverrideSave, onvalue=1, offvalue=0)
+    chkOver.place(x=461, y=15) # Setting button position
     
     global keyLabels
 
@@ -250,8 +258,14 @@ def prepSaveConfig():
     pass
 
 def saveConfigFile(strJson:str, clearMessage:bool = False):
-    #myFile:any
-    myFile = asksaveasfile(mode='w',initialfile = "KeyConfig.json", defaultextension="json",filetypes=[("JSON", ".json")])
+    global chkOverrideSave
+    boolConfirmoverwrite:bool= True
+    chkVal = chkOverrideSave.get()
+    if chkVal == '1':
+        boolConfirmoverwrite = False
+        pass
+    ## confirmoverwrite
+    myFile = asksaveasfile(mode='w',initialfile = "KeyConfig.json", confirmoverwrite=boolConfirmoverwrite, defaultextension="json",filetypes=[("JSON", ".json")])
     #KeyConfig.json
     if not myFile == None:
         myFileName:str = myFile.name
@@ -284,9 +298,7 @@ def saveConfigFile(strJson:str, clearMessage:bool = False):
                 programOpen = 'xdg-open'
                 # os.system('xdg-open "%s"' % aPath)
                 pass
-            # ubprocess.Popen(f'explorer {os.path.realpath(path)}')
-            subprocess.Popen(fr'{programOpen}  /select, "{aPath}"')            ## open
-            #os.system(f'start "{os.path.realpath(myFileName)}"')
+            subprocess.Popen(fr'{programOpen}  /select, "{aPath}"') ## open
             pass
         pass
 
