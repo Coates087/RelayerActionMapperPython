@@ -3,6 +3,7 @@ import constantsPython
 from formControls import BetterTextBox, pyControl
 import resource_files.general_icons as gIcons
 from tkinter.scrolledtext import ScrolledText
+import platform as os_sys
 
 #global myPreview
 #
@@ -33,8 +34,17 @@ def warningForm(controlMaster: tk.Misc):
     parentForm = controlMaster
     myWarn = tk.Toplevel()
     strNewLine:str = '\n\n'
+    
+    strRez = "810x400"
+    strMyOS = os_sys.uname().system
+    strMac = 'Darwin' # Macs system name is called "Darwin"
 
-    myWarn.geometry("810x400") # size of main window
+    if strMyOS == 'Linux' or  strMyOS == strMac:
+        strRez = "870x400" ## Linux has weird sizing differences
+        pass
+
+
+    myWarn.geometry(strRez) # size of main window
     myWarn.title("Information")
     myWarn.iconphoto(True, tk.PhotoImage(data=gIcons.OtherIcons.AppIconPNG, format="png"))
 

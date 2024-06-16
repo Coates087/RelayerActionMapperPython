@@ -95,8 +95,14 @@ def StartMain():
     global root
     root = tk.Tk()
 
+    strRez = "660x474"
+    strMyOS = os_sys.uname().system
+    strMac = 'Darwin' # Macs system name is called "Darwin"
+
+    if strMyOS == 'Linux' or  strMyOS == strMac:
+        strRez = '780x474'
     # Setting up main window
-    root.geometry("660x473") # size of main window
+    root.geometry(strRez) # size of main window
     root.title("Relayer Action Mapper PE (Python Edition)")
     # myIcon =tk.PhotoImage(data=gIcons.OtherIcons.AppIcon)#, format="bitmap")
     # root.iconbitmap(myIcon) #const.programIcon)

@@ -528,17 +528,26 @@ def LoadForm(myGlobalForm:tk.Misc):
     frame_main.grid(sticky='nw', row=2)
     radio_frame = tk.Frame(frame_top)
     radio_frame.grid()
-    radio_frame.grid_columnconfigure((0,1,2), weight=1, uniform="equal")
+    # radio_frame.grid_columnconfigure((0,1,2), weight=1, uniform="equal")
 
     global rdoInputType
     rdoInputType = tk.StringVar()
     rdoInputType.set(0)
 
+    canvasWidth = 680
+    strMyOS = os_sys.uname().system
+    strMac = 'Darwin' # Macs system name is called "Darwin"
+
+    if strMyOS == 'Linux' or  strMyOS == strMac:
+        canvasWidth = 730 ## Linux has weird sizing differences
+        pass
+
+
     rdoKey = tk.Radiobutton(radio_frame, text="Edit for Keyboard and Gamepad", variable=rdoInputType, value=0, command=InputModeChange)
     rdoPad = tk.Radiobutton(radio_frame, text="Edit for Controller Only", variable=rdoInputType, value=1, command=InputModeChange)
     radio_frame.grid(row=1, column=0)
     frame_top.place(x=1,y=1)
-    myCanvas  = tk.Canvas(frame_main, width=680, height=400)
+    myCanvas  = tk.Canvas(frame_main, width=canvasWidth, height=400)
     myCanvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     second_frame = tk.Frame(myCanvas, width = 1000, height = 600, #bg="green"
@@ -551,7 +560,7 @@ def LoadForm(myGlobalForm:tk.Misc):
     global warnButton
     global ConstWarnButton
     warnButton[ConstWarnButton] = myControl.createButton(controlMaster=radio_frame, myWidth=10,myHeight=1, controlText="Information", myCommand=openWarnWindow)
-    warnButton[ConstWarnButton].grid(row=1, column=3, sticky=tk.NW)
+    warnButton[ConstWarnButton].grid(row=1, column=3, padx=16, sticky=tk.NW)
 
     warnButton[ConstWarnButton].grid_remove()
     startWarningButtonColor()

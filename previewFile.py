@@ -3,6 +3,7 @@ import constantsPython
 from formControls import BetterTextBox, pyControl
 import resource_files.general_icons as gIcons
 from tkinter.scrolledtext import ScrolledText
+import platform as os_sys
 
 #global myPreview
 #
@@ -30,7 +31,16 @@ def previewFileForm(controlMaster: tk.Misc, jsonData:str):
 
     myPreview = tk.Toplevel()
 
-    myPreview.geometry("680x600") # size of main window
+    strRez = "680x600"
+    strMyOS = os_sys.uname().system
+    strMac = 'Darwin' # Macs system name is called "Darwin"
+
+    yExit = 529
+    if strMyOS == 'Linux' or  strMyOS == strMac:
+        strRez = '780x474'
+        yExit = 540
+
+    myPreview.geometry(strRez) # size of main window
     myPreview.title("Preview Config File")
     myPreview.iconphoto(True, tk.PhotoImage(data=gIcons.OtherIcons.AppIconPNG, format="png"))
 
@@ -48,7 +58,7 @@ def previewFileForm(controlMaster: tk.Misc, jsonData:str):
     btnPreviewExit.configure(command=closeThis)
     myPreview.protocol('WM_DELETE_WINDOW', closeThis)  # overrides control box's X button
 
-    btnPreviewExit.place(x=461, y=529) # Setting button position
+    btnPreviewExit.place(x=461, y=yExit) # Setting button position
     
     myPreview.grab_set() # forces focus on form
 

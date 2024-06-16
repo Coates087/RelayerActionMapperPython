@@ -104,6 +104,7 @@ def LoadpdateKeysForm(controlMaster: tk.Misc, strActionName:str, myTempGameContr
     else: # Linux
         strScrollActions.append('<ButtonPress-4>')
         strScrollActions.append('<ButtonPress-5>')
+
         
     keyControlForm = tk.Toplevel()
     keyControlForm.geometry("666x391") # size of main window
@@ -286,7 +287,15 @@ def ClearGlobals():
 def LoadFormContent(myGlobalForm:tk.Misc, strActionName:str, altButton:str=''):
     
     frame_top =tk.Frame(myGlobalForm, width=900, height=100)
-    frame_top.place(x=1,y=1)
+    frame_top.place(x=1,y=1)    
+    
+    # strMyOS = os_sys.uname().system
+
+
+    # strMac = 'Darwin' # Macs system name is called "Darwin"
+    # if strMyOS == 'Linux' or  strMyOS == strMac:
+    #     canvasWidth = 730 ## Linux has weird sizing differences
+    #     pass
     
     global lblKey
     lblKey = myControl.createBetterTextbox(controlMaster=frame_top, controlText ="Keys: " , myWidth=34,myHeight=1,readOnly=True)
@@ -325,13 +334,13 @@ def LoadFormContent(myGlobalForm:tk.Misc, strActionName:str, altButton:str=''):
     
     
     btnAddKeys:tk.Button = myControl.createButton(controlMaster=myGlobalForm, myWidth=14,myHeight=4, controlText="Add Key", myCommand=AddKey)
-    btnAddKeys.place(x=400,y=90)
+    btnAddKeys.place(x=500,y=90)
     
     btnSave:tk.Button = myControl.createButton(controlMaster=myGlobalForm, myWidth=14,myHeight=1, controlText="Save", myCommand=SaveChanges)
-    btnSave.place(x=400,y=260)
+    btnSave.place(x=500,y=260)
     
     btnCancel:tk.Button = myControl.createButton(controlMaster=myGlobalForm, myWidth=14,myHeight=1, controlText="Cancel", myCommand=CancelChanges)
-    btnCancel.place(x=400,y=300)
+    btnCancel.place(x=500,y=300)
 
     myButtons = vars(xBtn)
 
@@ -411,7 +420,7 @@ def LoadFormContent(myGlobalForm:tk.Misc, strActionName:str, altButton:str=''):
     frame_buttons.update_idletasks()
     
 
-    frame_canvas.config(width=270,
+    frame_canvas.config(width=370,
                         height=300)
     # Set the canvas scrolling region
     canvas.config(scrollregion=canvas.bbox("all"))
