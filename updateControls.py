@@ -399,6 +399,7 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
 
     if not updateControlForm == None:
         updateControlForm.grab_set() # forces focus on form
+        updateControlForm.transient(controlMaster) # set to be on top of the main window
         
         updateControlForm.protocol('WM_DELETE_WINDOW', CancelChanges)  # overrides control box's X button
         pass

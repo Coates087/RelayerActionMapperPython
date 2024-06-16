@@ -7,4 +7,4 @@
 mkdir -p "build"
 cp "./resource_objects/RelayerIcon.ico" "./build/RelayerIcon.ico"
 #
-python3.12 -m PyInstaller --onefile --noconsole --icon "RelayerIcon.ico" --specpath "./build/" --distpath  "./build/dist/" main.py --name "Relayer Action Mapper PE"
+python3.12 -m PyInstaller --onefile --noconsole --icon "RelayerIcon.ico" --specpath "./build/" --distpath  "./build/dist/" main.py --name "Relayer Action Mapper PE.elf"

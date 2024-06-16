@@ -37,7 +37,7 @@ def previewFileForm(controlMaster: tk.Misc, jsonData:str):
 
     yExit = 529
     if strMyOS == 'Linux' or  strMyOS == strMac:
-        strRez = '780x474'
+        strRez = '780x600'
         yExit = 540
 
     myPreview.geometry(strRez) # size of main window
@@ -61,6 +61,7 @@ def previewFileForm(controlMaster: tk.Misc, jsonData:str):
     btnPreviewExit.place(x=461, y=yExit) # Setting button position
     
     myPreview.grab_set() # forces focus on form
+    myPreview.transient(parentForm) # set to be on top of the main window
 
 def closeThis():
     global myPreview

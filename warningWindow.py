@@ -75,6 +75,9 @@ def warningForm(controlMaster: tk.Misc):
     myWarn.protocol('WM_DELETE_WINDOW', closeThis)  # overrides control box's X button
     
     myWarn.grab_set() # forces focus on form
+    myWarn.transient(parentForm) # set to be on top of the main window
+    if not parentForm.master == None:
+        myWarn.transient(parentForm.master) # set to be on top of the main window
 
 def closeThis():
     global myWarn
