@@ -203,6 +203,9 @@ def CancelChanges():
     updateControlForm.destroy()
     pass
 
+def disableClose():
+    pass
+
 def getAllDropDownValues(tempControls:GameControls)-> GameControls:
     
     global localGameContrls
@@ -401,7 +404,7 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
         updateControlForm.grab_set() # forces focus on form
         updateControlForm.transient(controlMaster) # set to be on top of the main window
         
-        updateControlForm.protocol('WM_DELETE_WINDOW', CancelChanges)  # overrides control box's X button
+        updateControlForm.protocol('WM_DELETE_WINDOW', disableClose)  # overrides control box's X button
         pass
 
     LoadForm(updateControlForm)
