@@ -797,7 +797,7 @@ def LoadForm(myGlobalForm:tk.Misc):
         else:
             myLable1.configure(padx=2)
         
-            dummyEl = tk.Entry(specialFrame,width=dummyWidth, state='readonly')
+            dummyEl = tk.Entry(specialFrame,width=dummyWidth, state='disabled')
             dummyEl.grid(column=1,row=0, padx=2, sticky="SW")
             pass
 
