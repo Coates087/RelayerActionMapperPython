@@ -1,6 +1,7 @@
 
 import json
 import tkinter as tk
+from tkinter import ttk
 from resource_files.ps_buttons import psBtn
 import resource_files.xbox_buttons as xBtn
 import resource_files.general_icons as gIcons
@@ -86,6 +87,9 @@ newControls:bool = False
 global selectedGamePadMode
 selectedGamePadMode:str = ''
 
+global subWindowIsActive
+subWindowIsActive:bool = False
+
 class childWin:    
     def storeKeyResults(myKey:str, myData:list[str]):
         global myGameContrls
@@ -165,6 +169,14 @@ class childWin:
         global jsonLocalGameControls
         jsonLocalGameControls = localGameContrls.Serialize()
         newControls = True
+
+        global subWindowIsActive
+        subWindowIsActive = False
+        pass
+
+    def resetActiveWindow():
+        global subWindowIsActive
+        subWindowIsActive = False
         pass
 
 
@@ -195,6 +207,15 @@ def SaveChanges():
     mainWin.setGameControlChanges(True, strJSON)
     #mainForm.mainWin.setGameControlChanges(True, strJSON)
     updateControlForm.destroy()
+    pass
+
+def CancelChanges2():
+    global updateControlForm
+
+    global subWindowIsActive
+
+    if subWindowIsActive == False:
+        updateControlForm.destroy()
     pass
 
 def CancelChanges():
@@ -404,7 +425,13 @@ def LoadpdateControlsForm(controlMaster: tk.Misc, jsonData:str, myTempGameContrl
         updateControlForm.grab_set() # forces focus on form
         updateControlForm.transient(controlMaster) # set to be on top of the main window
         
-        updateControlForm.protocol('WM_DELETE_WINDOW', disableClose)  # overrides control box's X button
+        # updateControlForm.protocol('WM_DELETE_WINDOW', disableClose)  # overrides control box's X button
+
+
+        updateControlForm.protocol('WM_DELETE_WINDOW', CancelChanges2)
+        # title_bar = tk.Frame(updateControlForm, bg='white', relief='raised', bd=2)
+        # close_button = tk.Button(title_bar, text='X',bg = "#2e2e2e",padx = 2,
+        # pady = 2,activebackground='red',bd = 0,font="bold",fg='white',highlightthickness=0, command=CancelChanges)
         pass
 
     LoadForm(updateControlForm)
@@ -419,6 +446,9 @@ def LoadKeyDialog(eventIndex:str='0', buttonName:str='', psButtonName:str = ''):
         global keyDropdowns
 
         global localGameContrls
+
+        global subWindowIsActive
+        subWindowIsActive = True
 
         LoadpdateKeysForm(updateControlForm,buttonName,localGameContrls, psButtonName)
 
@@ -468,7 +498,7 @@ def InputModeChange():
             pass
         pass
     
-        warnButton[ConstWarnButton].place(x=526, y=2) #grid() .place(x=580, y=2) #
+        warnButton[ConstWarnButton].place(x=510, y=2) #grid() .place(x=580, y=2) #
     else:
         for index, aButton in enumerate(allButtons):
             anXboxButton = myActions[index]
@@ -522,6 +552,9 @@ def startWarningButtonColor(startingColor:str='violet'):
 
 def openWarnWindow():
     global updateControlForm
+
+    global subWindowIsActive
+    subWindowIsActive = True
     warningForm(updateControlForm)
     pass
 
@@ -542,8 +575,10 @@ def LoadForm(myGlobalForm:tk.Misc):
     strMyOS = os_sys.uname().system
     strMac = 'Darwin' # Macs system name is called "Darwin"
 
+    dummyWidth = 23
     if strMyOS == 'Linux' or  strMyOS == strMac:
         canvasWidth = 730 ## Linux has weird sizing differences
+        dummyWidth = 19
         pass
 
 
@@ -563,8 +598,8 @@ def LoadForm(myGlobalForm:tk.Misc):
     
     global warnButton
     global ConstWarnButton
-    warnButton[ConstWarnButton] = myControl.createButton(controlMaster=frame_top, myWidth=20,myHeight=0, controlText="About Controller Only Mode", myCommand=openWarnWindow)
-    warnButton[ConstWarnButton].place(x=526, y=1) #.grid(row=1, column=3, padx=16, sticky=tk.NW)
+    warnButton[ConstWarnButton] = myControl.createButton(controlMaster=frame_top, myWidth=22,myHeight=0, controlText="About Controller Only Mode", myCommand=openWarnWindow)
+    warnButton[ConstWarnButton].place(x=510, y=1) #.grid(row=1, column=3, padx=16, sticky=tk.NW)
 
     warnButton[ConstWarnButton].place_forget() #grid_remove()
     startWarningButtonColor()
@@ -725,7 +760,7 @@ def LoadForm(myGlobalForm:tk.Misc):
         strSample = ', '.join(keyList)  
         #strSample = "Sample "+ str(r) + "-" + str(0)
         myLable1:BetterTextBox = myControl.createBetterTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=32,myHeight=1,readOnly=True)
-        myLable1.configure(bg="#E5E5E5", padx=5)
+        myLable1.configure(bg="#E5E5E5", padx=2)
         allLabels.append(myLable1)
         keyLabels[anXboxButton] = myLable1
         myLable1.grid(column=1,row=1, rowspan=1)
@@ -740,11 +775,10 @@ def LoadForm(myGlobalForm:tk.Misc):
 
         
         if anXboxButton.startswith("xbox_left_stick_"):
-           btnKeys1.configure(state=tk.DISABLED, bg="#ebebeb")
+           btnKeys1.configure(state=tk.DISABLED, bg="#ebebeb", padx=2)
 
         btnKeys1.grid(column=0,row=0, sticky="SW")
 
-        
         aDropDown = BetterCombobox(master= specialFrame, width=20, dislplayMember='GamePadButtonName', valueMember='GamePadButtonValue',values=myButtonOptions)  ##tk.OptionMenu(specialFrame, optionVar, myButtonOptions)
         aDropDown.configure(state="readonly")
         
@@ -754,10 +788,19 @@ def LoadForm(myGlobalForm:tk.Misc):
         allDropdowns.append(aDropDown)
         keyDropdowns[anXboxButton] = aDropDown
 
+        # aDropDown.grid(column=1,row=0, padx=2, sticky="SW")
+        # aDropDown.pack_forget()
         if not anXboxButton == "xbox_left_stick":
             aDropDown.set(myKeys[ConstButtonName])
-            aDropDown.grid(column=1,row=0, padx=2, sticky="SW")
+            aDropDown.grid(column=1,row=0, padx=2, rowspan=2)
             ToolTip(lbl, text=myKeys[ConstKeyDesc],bg='#ebebed',fg='black',borderColor='#333b54', borderThickness=2)
+        else:
+            myLable1.configure(padx=2)
+        
+            dummyEl = tk.Entry(specialFrame,width=dummyWidth, state='readonly')
+            dummyEl.grid(column=1,row=0, padx=2, sticky="SW")
+            pass
+
         
         mySubFrame.grid(row=r,column=1)
     

@@ -139,7 +139,6 @@ class BetterCombobox(ttk.Combobox):
             
         # combobox constructor with list of keys
         ttk.Combobox.__init__(self,master=master, values=optionVals2)
-
         # assign some function
         # self.bind('<<ComboboxSelected>>', self.on_select)
 

@@ -5,6 +5,8 @@ import resource_files.general_icons as gIcons
 from tkinter.scrolledtext import ScrolledText
 import platform as os_sys
 
+import updateControls 
+
 #global myPreview
 #
 const = constantsPython.strResourcePath()
@@ -83,5 +85,6 @@ def closeThis():
     global myWarn
     global parentForm
     parentForm.grab_set()
+    updateControls.childWin.resetActiveWindow()
     myWarn.destroy()
     pass

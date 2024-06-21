@@ -214,6 +214,7 @@ def CancelChanges():
 
     global myParent
     myParent.grab_set()
+    updateControls.childWin.resetActiveWindow()
     keyControlForm.destroy()
     pass
 
