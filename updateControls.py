@@ -468,7 +468,7 @@ def InputModeChange():
             pass
         pass
     
-        warnButton[ConstWarnButton].grid()
+        warnButton[ConstWarnButton].place(x=526, y=2) #grid() .place(x=580, y=2) #
     else:
         for index, aButton in enumerate(allButtons):
             anXboxButton = myActions[index]
@@ -483,7 +483,7 @@ def InputModeChange():
             pass
         pass
 
-        warnButton[ConstWarnButton].grid_remove()
+        warnButton[ConstWarnButton].place_forget() #grid_remove()
     pass
 
 def ComboScrollOnOpen(self, event, buttonNameKey:str=''): ## self, event, 
@@ -527,11 +527,11 @@ def openWarnWindow():
 
 def LoadForm(myGlobalForm:tk.Misc):
 
-    frame_top =tk.Frame(myGlobalForm, width=600, height=550)
-    frame_main = tk.Frame(frame_top, width=400, height=500)
-    frame_main.grid(sticky='nw', row=2)
+    frame_top =tk.Frame(myGlobalForm, width=500, height=550)
+    frame_main = tk.Frame(frame_top, width=400, height=500, bg='black')
+    frame_main.grid(sticky='n', row=2, column=0)
     radio_frame = tk.Frame(frame_top)
-    radio_frame.grid()
+    # radio_frame.grid()#(columnspan=0)
     # radio_frame.grid_columnconfigure((0,1,2), weight=1, uniform="equal")
 
     global rdoInputType
@@ -549,24 +549,24 @@ def LoadForm(myGlobalForm:tk.Misc):
 
     rdoKey = tk.Radiobutton(radio_frame, text="Edit for Keyboard and Gamepad", variable=rdoInputType, value=0, command=InputModeChange)
     rdoPad = tk.Radiobutton(radio_frame, text="Edit for Controller Only", variable=rdoInputType, value=1, command=InputModeChange)
-    radio_frame.grid(row=1, column=0)
+    radio_frame.grid(row=1, column=0, sticky=tk.W)
     frame_top.place(x=1,y=1)
     myCanvas  = tk.Canvas(frame_main, width=canvasWidth, height=400)
     myCanvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-    second_frame = tk.Frame(myCanvas, width = 1000, height = 600, #bg="green"
+    second_frame = tk.Frame(myCanvas, width = 800, height = 600
                             )
     second_frame.pack(expand=1)
 
-    rdoKey.grid(row=1, column=1, sticky=tk.NW)
-    rdoPad.grid(row=1, column=2, sticky=tk.NW)
-
+    rdoKey.grid(row=1, column=0, padx=20, pady=6, sticky=tk.NW)
+    rdoPad.grid(row=1, column=2, padx=20, pady=6, sticky=tk.NW)
+    
     global warnButton
     global ConstWarnButton
-    warnButton[ConstWarnButton] = myControl.createButton(controlMaster=radio_frame, myWidth=10,myHeight=1, controlText="Information", myCommand=openWarnWindow)
-    warnButton[ConstWarnButton].grid(row=1, column=3, padx=16, sticky=tk.NW)
+    warnButton[ConstWarnButton] = myControl.createButton(controlMaster=frame_top, myWidth=20,myHeight=0, controlText="About Controller Only Mode", myCommand=openWarnWindow)
+    warnButton[ConstWarnButton].place(x=526, y=1) #.grid(row=1, column=3, padx=16, sticky=tk.NW)
 
-    warnButton[ConstWarnButton].grid_remove()
+    warnButton[ConstWarnButton].place_forget() #grid_remove()
     startWarningButtonColor()
 
     btnSave:tk.Button = myControl.createButton(controlMaster=myGlobalForm, myWidth=14,myHeight=1, controlText="Save", myCommand=SaveChanges)
@@ -645,7 +645,7 @@ def LoadForm(myGlobalForm:tk.Misc):
 
         keyList:list[str] = myKeys[ConstKeyCode]  
         strSample = ', '.join(keyList)  
-        myLable1:BetterTextBox = myControl.createBetterTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
+        myLable1:BetterTextBox = myControl.createBetterTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=32,myHeight=1,readOnly=True)
         
         myLable1.configure(bg="#E5E5E5", padx=5)
         allLabels.append(myLable1)
@@ -724,7 +724,7 @@ def LoadForm(myGlobalForm:tk.Misc):
         keyList:list[str] = myKeys[ConstKeyCode]  
         strSample = ', '.join(keyList)  
         #strSample = "Sample "+ str(r) + "-" + str(0)
-        myLable1:BetterTextBox = myControl.createBetterTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=34,myHeight=1,readOnly=True)
+        myLable1:BetterTextBox = myControl.createBetterTextbox(controlMaster=mySubFrame, controlText =strSample , myWidth=32,myHeight=1,readOnly=True)
         myLable1.configure(bg="#E5E5E5", padx=5)
         allLabels.append(myLable1)
         keyLabels[anXboxButton] = myLable1
