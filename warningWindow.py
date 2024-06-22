@@ -54,7 +54,7 @@ def warningForm(controlMaster: tk.Misc):
     myLable1.configure(bg="#E5E5E5", padx=5)
     myLable1.place(x=5, y=29)
 
-    testStr = 'You have selected "“Edit for Controller Only”". This mode is intended for the "Controller Button Prompts" mod on Nexus Mods and Game Banana.' 
+    testStr = 'You have selected "Edit for Controller Only". This mode is intended for the "Controller Button Prompts" mod on Nexus Mods and Game Banana.' 
     testStr += strNewLine
     testStr += 'Nexus Mods Link:'
     testStr += '\n'
