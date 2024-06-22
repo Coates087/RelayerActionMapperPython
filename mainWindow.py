@@ -155,6 +155,8 @@ def StartMain():
     btnKeyboard = myControl.createButton(controlMaster=root, controlText="Create Keyboard Config File", myWidth=configButtonWidth, myCommand=lambda:prepDefaultConfig(defaultConfigOptions.defaultKeyboardConfigOp))
     btnKeyboard.place(x=configButtonX, y=300) # Setting button position 
 
+    # btnTest = myControl.createButton(controlMaster=root, controlText="Test", myCommand=openBase64File)
+    # btnTest.place(x=153, y=328) # Setting button position 
 
     # btnBase64 = myControl.createButton(controlMaster=root, controlText="Convert Base 64", myCommand=openBase64File)
     # btnBase64.place(x=153, y=328) # Setting button position 
@@ -286,6 +288,7 @@ def saveConfigFile(strJson:str, clearMessage:bool = False):
 
         from tkinter import messagebox 
         import subprocess 
+        #from showinfm import show_in_file_manager
         messageResult = messagebox.askyesno("Save Successful", "Do you wish to open the directory for this file?") 
         if messageResult == True:
             aPath =os.path.realpath(myFileName)
@@ -295,16 +298,28 @@ def saveConfigFile(strJson:str, clearMessage:bool = False):
 
             # we need to determent the os in order to properly unbind and rebind the mouse scroll os_sys
             strMyOS = os_sys.uname().system
-            
+
+            strFullPath:str = ''
             if strMyOS == 'Windows': 
-                programOpen = 'explorer'
+                programOpen = 'explorer   /select'
+                strFullPath = fr'"{aPath}"'
             elif strMyOS == strMac:
-                programOpen = 'open'
+                programOpen = 'open' # untested
+                strFullPath = fr'{os.path.dirname(aPath)}'
             else: # Linux
                 programOpen = 'xdg-open'
+                strFullPath = fr'{os.path.dirname(aPath)}'
                 # os.system('xdg-open "%s"' % aPath)
                 pass
-            subprocess.Popen(fr'{programOpen}  /select, "{aPath}"') ## open
+            try:
+                if strMyOS == 'Windows':
+                    subprocess.Popen(fr'{programOpen}, {strFullPath}') ## open
+                else:
+                    subprocess.Popen([programOpen, strFullPath]) ## open
+            except Exception as e:
+                print(e)
+                pass
+            # subprocess.Popen(fr'{programOpen}  /select, "{aPath}"') ## open
             pass
         pass
 
@@ -367,6 +382,37 @@ def updateControls():
             return
         
     LoadpdateControlsForm(root, fileContents, myGameContrls, selectedGamePadMode)
+
+def testFunction():
+
+    # from tkinter import messagebox 
+    # import subprocess 
+    # messageResult = messagebox.askyesno("Save Successful", "Do you wish to open the directory for this file?") 
+    # if messageResult == True:
+    #     aPath =os.path.realpath(myFileName)
+    #     programOpen:str = ''
+        
+    #     strMac = 'Darwin' # Macs system name is called "Darwin"
+
+    #     # we need to determent the os in order to properly unbind and rebind the mouse scroll os_sys
+    #     strMyOS = os_sys.uname().system
+        
+    #     if strMyOS == 'Windows': 
+    #         programOpen = 'explorer'
+    #     elif strMyOS == strMac:
+    #         programOpen = 'open'
+    #     else: # Linux
+    #         programOpen = 'xdg-open'
+    #         # os.system('xdg-open "%s"' % aPath)
+    #         pass
+    #     try
+    #         subprocess.Popen(fr'{programOpen}  /select, "{aPath}"') ## open
+    #     except Exception as e:
+    #         print(e)
+    #         pass
+
+    #     pass
+    pass
 
 def openBase64File():
     
