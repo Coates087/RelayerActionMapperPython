@@ -578,7 +578,7 @@ def LoadForm(myGlobalForm:tk.Misc):
     dummyWidth = 23
     if strMyOS == 'Linux' or  strMyOS == strMac:
         canvasWidth = 730 ## Linux has weird sizing differences
-        dummyWidth = 19
+        dummyWidth = 21
         pass
 
 
@@ -772,10 +772,10 @@ def LoadForm(myGlobalForm:tk.Misc):
         keyButtons[anXboxButton] = btnKeys1
 
         specialFrame.grid(column=1,row=0, sticky="SW")
-
+        btnKeys1.configure(padx=2)
         
         if anXboxButton.startswith("xbox_left_stick_"):
-           btnKeys1.configure(state=tk.DISABLED, bg="#ebebeb", padx=2)
+           btnKeys1.configure(state=tk.DISABLED, bg="#ebebeb")
 
         btnKeys1.grid(column=0,row=0, sticky="SW")
 
@@ -796,7 +796,7 @@ def LoadForm(myGlobalForm:tk.Misc):
             ToolTip(lbl, text=myKeys[ConstKeyDesc],bg='#ebebed',fg='black',borderColor='#333b54', borderThickness=2)
         else:
             myLable1.configure(padx=2)
-        
+            # dummyWidth
             dummyEl = tk.Entry(specialFrame,width=dummyWidth, state='disabled')
             dummyEl.grid(column=1,row=0, padx=2, sticky="SW")
             pass
