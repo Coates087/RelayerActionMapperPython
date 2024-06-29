@@ -8,6 +8,7 @@ from GameControlsClass import GameControls
 import constantsPython
 from formControls import pyControl, BetterTextBox
 from previewFile import previewFileForm
+import sys
 #from updateControls import LoadpdateControlsForm
 #import updateControls.LoadpdateControlsForm
 
@@ -20,6 +21,9 @@ import resource_files.default_controls as defaultConfigs
 const = constantsPython.strResourcePath()
 
 import mainWindow
+
+
+# print("\nName of Python script:", sys.argv)
 
 mainWindow.StartMain()
 

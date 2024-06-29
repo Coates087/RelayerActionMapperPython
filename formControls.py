@@ -89,8 +89,13 @@ class pyControl:
 
 class BetterTextBox(tk.Text):
     def get_value(self):
-        self.get("1.0",tk.END) # get textbox value
-        pass
+        myText = self.get("1.0",tk.END) # get textbox value
+
+        myTextLength = myText.__len__()
+        if myTextLength > 0:
+            myText = myText[:-1]
+
+        return myText
     
     def set_value(self,labelText:str=''):
         myStatus =self["state"]

@@ -1,9 +1,13 @@
+import argparse
 import base64
+from binascii import Incomplete
+import sys
 import tkinter as tk
 import ntpath
 import json
 from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
 import os
+from typing import IO
 from GameControlsClass import GameControls
 import constantsPython
 from formControls import ToolTip, pyControl, BetterTextBox
@@ -33,11 +37,16 @@ saveWarn = "Click on the <<Save File>> button to save your changes."
 global unsaved
 unsaved:bool = False
 
+global defaultSavePath
+defaultSavePath:str = ''
 
 global rdoGamePadType
 rdoGamePadType:tk.StringVar = None
 global chkOverrideSave
 chkOverrideSave:tk.StringVar = None
+
+global strLoadedFileName
+strLoadedFileName:str = ''
 
 class defaultConfigOptions:
     defaultConfigOp:str = 'defaultConfig'
@@ -192,9 +201,79 @@ def StartMain():
     # canvas.pack()
     # canvas.create_image(20, 20, anchor=tk.NW, image=myImage)
     ## root.configure(background=myImage)
+
+
+    
+    print("\nName of Python script:", sys.argv)
+    HandleArgs()
     root.mainloop()
     return (True)
 
+
+def HandleArgs():
+    global defaultSavePath
+    global rdoGamePadType
+    global chkOverrideSave
+    myString:str = ', '.join(sys.argv)
+    
+    # when the user enclose the path the double quotes, the second double quote might be a part of the string if it is after a "\"
+    myString = myString.replace('"',",")
+    myArgs:list[str] = myString.split(', ')
+
+    print(sys.argv)
+    # print(myArgs)
+    argLength = myArgs.__len__()
+    for i in range(argLength):
+        arg = myArgs[i]
+
+        argLower = arg.lower()
+        if argLower == '-ps':
+            print('Turning on PS Mode...')
+            rdoGamePadType.set(1) # setting the program to PlayStation mode
+            pass
+        elif argLower.startswith('-load'):
+            myFileName:str = ''
+            if argLower == '-load':
+                if i+1 <= argLength:
+                    myFileName = myArgs[i+1] # the path is in the next element of the array
+                pass
+            else:
+                myFileName = arg.replace('-load ','')
+                pass
+            print(fr'Found File Path: {myFileName}')
+            if os.path.isfile(myFileName):
+                print(fr'Opening File: {myFileName}')
+                f = open(myFileName, "r")
+                myFileContents = f.read()
+                f.close()
+                loadConfigFile(myFileName, myFileContents)
+                pass
+
+        elif argLower.startswith('-save'):
+            myPath:str = ''
+            if argLower == '-save':
+                if i+1 <= argLength:
+                    myPath = myArgs[i+1] # the path is in the next element of the array
+                pass
+            else:
+                myPath = arg.replace('-save ','')
+                pass
+            # when the user enclose the path the double quotes, the second double quote might be a part of the string if it is after a "\"
+            myPath = myPath.replace('"','')
+            print(fr'Checking Path: {myPath}')
+            if os.path.isdir(myPath):
+                print(fr'Setting Path: {myPath}')
+                defaultSavePath = myPath
+                pass
+
+        elif argLower == '-overridesave':
+            
+            chkOverrideSave.set(1)
+            pass
+
+
+        # pass
+    pass
 
 def GamePadModeChange():
     global rdoGamePadType
@@ -238,7 +317,8 @@ def openSpecialFile():
 
 def prepDefaultConfig(strType:str =''):
     
-    textData:str #defaultConfigs.json_control_data.default_xbox_config.decode()
+    textData:str = ''
+    psMode: bool = False
     match strType:
         case defaultConfigOptions.defaultConfigOp:
             textData = defaultConfigs.json_control_data.default_config.decode()
@@ -248,6 +328,7 @@ def prepDefaultConfig(strType:str =''):
             pass
         case defaultConfigOptions.defaultPlayStationConfigOp:
             textData = defaultConfigs.json_control_data.default_PS_config.decode()
+            psMode = True
             pass
         case defaultConfigOptions.defaultKeyboardConfigOp:
             textData = defaultConfigs.json_control_data.default_keyboard_config.decode()
@@ -255,30 +336,89 @@ def prepDefaultConfig(strType:str =''):
         case _:
             textData = defaultConfigs.json_control_data.default_config.decode()
             pass
+    
+    
+    global rdoGamePadType
+    global fileContents 
+    global keyLabels
+    lblFile = keyLabels['load-file'] #tk.Text
+    lblText = lblFile.get_value()
 
-    saveConfigFile(textData)
+    loadSavedFile:bool = False
+    if (lblText == '' or lblText == None) and fileContents == '':
+        loadSavedFile = True
+        pass
+    saveResult = saveConfigFile(textData,False,loadSavedFile)
+
+    if saveResult == True and loadSavedFile == True:
+        if psMode == True:
+            rdoGamePadType.set(1)
+            pass
+        else:
+            rdoGamePadType.set(0)
+
     pass
 
 def prepSaveConfig():
     global myGameContrls
-    strJson = myGameContrls.Serialize(4)
-    saveConfigFile(strJson, True)
+    global fileContents 
+    global rdoGamePadType
+
+    selectedGamePadMode = rdoGamePadType.get()
+    strSpecialMessage = 'No config file has been loaded. Please load a config file, or click the "Edit Controls" button in order to save your controls.'
+    if fileContents == '':
+        
+        from tkinter import messagebox 
+        messageResult = messagebox.showwarning("Information", strSpecialMessage)
+        pass
+    else:
+        
+        global keyLabels
+        lblFile = keyLabels['load-file'] #tk.Text
+        lblText = lblFile.get_value()
+
+        loadSavedFile:bool = False
+        if lblText == '':
+            loadSavedFile = True
+            pass
+        strJson = myGameContrls.Serialize(4)
+        saveConfigFile(strJson, True, loadSavedFile)
     pass
 
-def saveConfigFile(strJson:str, clearMessage:bool = False):
+def saveConfigFile(strJson:str, clearMessage:bool = False, loadFile:bool = False):
     global chkOverrideSave
+    global defaultSavePath
+    global strLoadedFileName
+
+    defaultFileName = "KeyConfig.json"
+    saveSuccess:bool = False
+
+    if strLoadedFileName != '':
+        defaultFileName = strLoadedFileName
+        pass
+
     boolConfirmoverwrite:bool= True
     chkVal = chkOverrideSave.get()
     if chkVal == '1':
         boolConfirmoverwrite = False
         pass
-    ## confirmoverwrite
-    myFile = asksaveasfile(mode='w',initialfile = "KeyConfig.json", confirmoverwrite=boolConfirmoverwrite, defaultextension="json",filetypes=[("JSON", ".json")])
-    #KeyConfig.json
+    myFile: IO[Incomplete] | None
+
+    if os.path.isdir(defaultSavePath):
+        myFile = asksaveasfile(mode='w',initialfile = defaultFileName, initialdir=defaultSavePath, confirmoverwrite=boolConfirmoverwrite, defaultextension="json",filetypes=[("JSON", ".json")])
+        pass
+    else:
+        myFile = asksaveasfile(mode='w',initialfile = defaultFileName, confirmoverwrite=boolConfirmoverwrite, defaultextension="json",filetypes=[("JSON", ".json")])
+        pass
+    
     if not myFile == None:
         myFileName:str = myFile.name
         myFile.write(strJson)
         myFile.close()
+        saveSuccess = True
+        if loadFile == True:
+            loadConfigFile(myFileName,strJson)
+            pass
 
         if clearMessage == True:
             global keyLabels
@@ -322,6 +462,7 @@ def saveConfigFile(strJson:str, clearMessage:bool = False):
             # subprocess.Popen(fr'{programOpen}  /select, "{aPath}"') ## open
             pass
         pass
+    return saveSuccess
 
 def openConfigFile():
     #
@@ -331,34 +472,40 @@ def openConfigFile():
         myFileName = myFile.name
         textResult = myFile.read()
         myFile.close()
-        global fileContents 
-        fileContents = textResult
-        
-        try:
-            # do something
-            obj:GameControls = GameControls.Deserialize(fileContents)
-
-            global myGameContrls
-            myGameContrls = obj
-            
-            global keyLabels
-            lblFile = keyLabels['load-file'] #tk.Text
-
-            if not lblFile == None:
-                fileNameOnly:str = os.path.basename(myFileName) ## test this in linux
-                labelText = "File Loaded: " + fileNameOnly
-                lblFile.set_value(labelText)
-                pass
-
-            
-        except Exception as e:
-            # handle it
-            print("Error: " + e.args[0])
+        loadConfigFile(myFileName,textResult)
 
         print("File Found: " + myFileName)
     else:
         print("No file selected")
 
+
+def loadConfigFile(strFileName:str, strFileContents:str):
+    global strLoadedFileName    
+    global fileContents 
+    fileContents = strFileContents
+
+    try:
+        # do something
+        obj:GameControls = GameControls.Deserialize(fileContents)
+
+        global myGameContrls
+        myGameContrls = obj
+        
+        global keyLabels
+        lblFile = keyLabels['load-file'] #tk.Text
+
+        if not lblFile == None:
+            fileNameOnly:str = os.path.basename(strFileName) ## test this in linux
+            strLoadedFileName =  fileNameOnly
+            labelText = "File Loaded: " + fileNameOnly
+            lblFile.set_value(labelText)
+            pass
+
+        
+    except Exception as e:
+        # handle it
+        print("Error: " + e.args[0])
+    pass
 
 def previewFile():
     previewFileForm(root, fileContents)
