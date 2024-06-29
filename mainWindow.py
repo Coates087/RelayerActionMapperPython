@@ -11,6 +11,7 @@ from typing import IO
 from GameControlsClass import GameControls
 import constantsPython
 from formControls import ToolTip, pyControl, BetterTextBox
+from helpSection import helpSectionForm
 from previewFile import previewFileForm
 from updateControls import LoadpdateControlsForm
 import platform as os_sys
@@ -196,11 +197,10 @@ def StartMain():
     myLable12.place(x=10, y=418) # Setting label position
     #myLable11.tab
     btnExit.place(x=461, y=359) # Setting button position
-    # 'saveWarn'
-    # canvas = tk.Canvas(root, width=300, height=300)
-    # canvas.pack()
-    # canvas.create_image(20, 20, anchor=tk.NW, image=myImage)
-    ## root.configure(background=myImage)
+    
+
+    btnHelp = myControl.createButton(controlMaster=root, controlText="Help", myWidth=4, myHeight=1, myCommand=OpenHelp)
+    btnHelp.place(x=598, y=14) 
 
 
     
@@ -209,6 +209,10 @@ def StartMain():
     root.mainloop()
     return (True)
 
+def OpenHelp():
+    global root
+    helpSectionForm(root)
+    pass
 
 def HandleArgs():
     global defaultSavePath
