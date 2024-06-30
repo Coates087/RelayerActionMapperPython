@@ -108,9 +108,11 @@ def StartMain():
     strRez = "660x474"
     strMyOS = os_sys.uname().system
     strMac = 'Darwin' # Macs system name is called "Darwin"
-
+    xHelp = 598
     if strMyOS == 'Linux' or  strMyOS == strMac:
         strRez = '780x474'
+        xHelp += 38
+        pass
     # Setting up main window
     root.geometry(strRez) # size of main window
     root.title("Relayer Action Mapper PE (Python Edition)")
@@ -200,7 +202,7 @@ def StartMain():
     
 
     btnHelp = myControl.createButton(controlMaster=root, controlText="Help", myWidth=4, myHeight=1, myCommand=OpenHelp)
-    btnHelp.place(x=598, y=14) 
+    btnHelp.place(x=xHelp, y=14) 
 
 
     
@@ -592,7 +594,3 @@ def openBase64File():
         f.write(myDataStr)
         f.close()
 
-
-# if root == None:
-#     StartMain()
-#     pass

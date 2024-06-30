@@ -39,8 +39,8 @@ def helpSectionForm(controlMaster: tk.Misc):
     
     canvasWidth = 680
     if strMyOS == 'Linux' or  strMyOS == strMac:
-        strRez = '800x600'
-        yExit = 540
+        strRez = '800x680'
+        yExit = 600
         canvasWidth = 730
         pass
 
