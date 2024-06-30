@@ -104,6 +104,8 @@ def LoadHelpText():
     strProgramName = 'Relayer Action Mapper PE'
     strProgramNameWithExt:str = strProgramName
 
+    strProgramNameFinal:str = ''
+
     strAppleArticle: str = ''
 
     #strMyOS = 'Linux'
@@ -113,6 +115,7 @@ def LoadHelpText():
         strProgramNameWithExt += '.elf'
         strScriptFileName = 'shell script'
         strScriptExt = '.sh'
+        strProgramNameFinal = '"./' + strProgramNameWithExt + '"'
         pass
     elif strMyOS == strMac:
         strFolderSlash = '/'
@@ -121,8 +124,11 @@ def LoadHelpText():
         strScriptFileName = 'apple script'
         strAppleArticle = 'n'
         strScriptExt = '.scpt'
+        strProgramNameFinal = '"./' + strProgramNameWithExt + '"'
     else:
         strProgramNameWithExt += '.exe'
+
+        strProgramNameFinal = strProgramNameWithExt
         pass
     # myText+=fr''
 
@@ -138,7 +144,7 @@ def LoadHelpText():
     myText+=fr'Description: Sets {strProgramName} to "PlayStation" mode.'
     myText+=fr' This is the mode that changes the button icons and game pad options on the "Edit Controls screen".'
     myText+='\n'
-    myText+=fr'Usage: {strProgramNameWithExt} -ps'
+    myText+=fr'Usage: {strProgramNameFinal} -ps'
     myText+='\n\n'
 
     # -overridesave
@@ -147,7 +153,7 @@ def LoadHelpText():
     myText+='Description: Checks the "Always Override File" checkbox. When checking this checkbox, the "Save File" '
     myText+="button won't ask you if you want to override your config file." 
     myText+='\n'
-    myText+=fr'Usage: {strProgramNameWithExt} -overridesave'
+    myText+=fr'Usage: {strProgramNameFinal} -overridesave'
     myText+='\n\n'
 
     # -load
@@ -155,7 +161,7 @@ def LoadHelpText():
     myText+='\n'
     myText+='Description: Immediately loads your config file, if the file exist. If the file path of your file contains a space, you must surround it with double quotes.'     
     myText+='\n'
-    myText+=fr'Usage: {strProgramNameWithExt} -load'
+    myText+=fr'Usage: {strProgramNameFinal} -load'
     myText+= fr' "{strDefaultDrive}My Folder{strFolderSlash}KeyConfig.json"'
     myText+='\n\n'
 
@@ -164,7 +170,7 @@ def LoadHelpText():
     myText+='\n'
     myText+='Description: Sets the default directory for saving your config file. Like the "-load" command, you will need to surround the directory path with double quotes if it contains spaces.'     
     myText+='\n'
-    myText+=fr'Usage: {strProgramNameWithExt} -save'
+    myText+=fr'Usage: {strProgramNameFinal} -save'
     myText+= fr' "{strDefaultDrive}My Folder{strFolderSlash}Keys{strFolderSlash}"'
     myText+='\n\n'
 
@@ -174,7 +180,7 @@ def LoadHelpText():
     myText+='You can use none, one, or a combonation of these command line arguments together.'     
     myText+='\n'
     myText+='Example: \n'
-    myText+= fr'{strProgramNameWithExt} -ps -load "{strDefaultDrive}My Folder{strFolderSlash}KeyConfig.json"'
+    myText+= fr'{strProgramNameFinal} -ps -load "{strDefaultDrive}My Folder{strFolderSlash}KeyConfig.json"'
     myText+= fr' -save "{strDefaultDrive}My Folder{strFolderSlash}Keys{strFolderSlash}"'
     myText+= fr' -overridesave'
     # -overridesave
