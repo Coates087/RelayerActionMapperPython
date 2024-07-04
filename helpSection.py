@@ -177,7 +177,7 @@ def LoadHelpText():
     # combo
     myText+=fr'**Additional Information**'
     myText+='\n'
-    myText+='You can use none, one, or a combonation of these command line arguments together.'     
+    myText+='You can use none, one, or a combination of these command line arguments together.'     
     myText+='\n'
     myText+='Example: \n'
     myText+= fr'{strProgramNameFinal} -ps -load "{strDefaultDrive}My Folder{strFolderSlash}KeyConfig.json"'
