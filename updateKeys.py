@@ -6,7 +6,7 @@ from tkinter.filedialog import askopenfile, askopenfilename, asksaveasfile
 from formControls import pyControl, BetterCombobox, BetterTextBox, ToolTip
 from resource_files.xbox_buttons import xBtn
 from GameControlsClass import GameControls, GamePadButton, KeyboardClass
-from tkinter.tix import ScrolledWindow
+#from tkinter.tix import ScrolledWindow
 from copy import copy, deepcopy
 #from sys import platform as os_sys
 import platform as os_sys
